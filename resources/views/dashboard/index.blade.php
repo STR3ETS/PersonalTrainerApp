@@ -10,6 +10,7 @@
         <script src="https://kit.fontawesome.com/4180a39c11.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -29,9 +30,69 @@
             body {
                 font-family: 'Inter', sans-serif;
             }
+
+            .modal-backdrop {
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+            }
+            .modal {
+                max-width: 400px;
+            }
         </style>
     </head>
     <body class="bg-[var(--primary-color)]/10">
+        @if(auth()->user()->is_temp_account)
+            <div x-data="accountSetup()" 
+                x-show="showModal" 
+                x-cloak
+                class="fixed inset-0 z-[9999] flex items-center justify-center modal-backdrop">
+                <div class="modal bg-white rounded-lg p-6 mx-4">
+                    <h2 class="leading-tight text-sm font-semibold text-[var(--text-color)] mb-4">Stel je account in</h2>
+                    <p class="text-sm text-[var(--text-color)] mb-6">Om je voortgang te behouden, stel je account definitief in met een e-mailadres en wachtwoord.</p>
+                    <form @submit.prevent="submitForm">
+                        <div class="mb-4 flex flex-col gap-2">
+                            <label class="text-xs font-medium text-[var(--text-color)]">Naam</label>
+                            <input type="text" 
+                                x-model="form.name" 
+                                class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]" 
+                                placeholder="Je volledige naam"
+                                required>
+                        </div>
+                        <div class="mb-4 flex flex-col gap-2">
+                            <label class="text-xs font-medium text-[var(--text-color)]">E-mailadres</label>
+                            <input type="email" 
+                                x-model="form.email" 
+                                class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]" 
+                                placeholder="je@email.com"
+                                required>
+                        </div>
+                        <div class="mb-4 flex flex-col gap-2">
+                            <label class="text-xs font-medium text-[var(--text-color)]">Wachtwoord</label>
+                            <input type="password" 
+                                x-model="form.password" 
+                                class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]" 
+                                placeholder="Minimaal 8 tekens"
+                                minlength="8"
+                                required>
+                        </div>
+                        <div class="mb-10 flex flex-col gap-2">
+                            <label class="text-xs font-medium text-[var(--text-color)]">Bevestig wachtwoord</label>
+                            <input type="password" 
+                                x-model="form.password_confirmation" 
+                                class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]" 
+                                placeholder="Herhaal je wachtwoord"
+                                required>
+                        </div>
+                        <button type="submit" 
+                                :disabled="loading"
+                                class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">
+                            <span x-show="!loading">Account instellen</span>
+                            <span x-show="loading">Bezig...</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @endif
         <div class="w-full h-screen flex">
             <div class="p-3 bg-white w-fit h-full flex flex-col justify-center gap-2 relative">
                 <img src="/assets/2befit-logo.png" alt="Logo" class="max-w-[2rem] absolute top-2">
@@ -76,23 +137,66 @@
                     </form>
                 </div>
                 <div class="max-w-[1200px] py-[5rem] px-[1.5rem] mx-auto h-full flex flex-col gap-8">
-                    <h1 class="fade-in-up text-[var(--text-color)] text-3xl font-bold tracking-tighter">Welkom terug <br class="block md:hidden">{{ $user->name }}!</h1>
-                    <div class="fade-in-up grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <h1 class="text-[var(--text-color)] text-3xl font-bold tracking-tighter">Welkom terug <br class="block md:hidden">{{ $user->name }}!</h1>
+                    <div class="w-full min-h-[400px] relative overflow-hidden rounded-[var(--border-radius)]">
+                        <div class="w-full h-full absolute z-[2] bg-black/10 flex flex-col items-center justify-center">
+                            <h3 class="uppercase tracking-[0.4em] text-white font-semibold text-xs mb-4 text-center">Passie voor fitness en een gezonde leefstijl</h3>
+                            <h2 class="text-[40px] text-white tracking-tighter font-bold leading-tight text-center mb-8">Supplementen voor sporters<br>van de hoogste kwaliteit</h2>
+                            <a href="#" class="font-semibold text-white text-sm bg-[var(--text-color)] hover:bg-[var(--text-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-fit">Bekijk onze producten</a>
+                        </div>
+                        <video src="{{ asset('assets/app-hero.mp4') }}" class="absolute z-[1] inset-0 w-full h-full object-cover" autoplay muted loop playsinline></video>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Huidige Gewicht -->
                         <div class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem] flex flex-col gap-4">
                             <h3 class="text-[var(--text-color)] text-lg font-semibold tracking-tighter">Huidige Gewicht</h3>
-                            <h4 class="text-[var(--primary-color)] text-2xl font-bold tracking-tighter">83.4&nbsp;&nbsp;<span class="text-sm">kg</span></h4>
-                            <p class="text-xs text-green-500 -mt-3 tracking-tighter font-medium">-0,8 kg sinds vorige week</p>
+                            @if(auth()->user()->profile?->current_weight_kg)
+                                <h4 class="text-[var(--primary-color)] text-2xl font-bold tracking-tighter">
+                                    {{ auth()->user()->profile->current_weight_kg }}&nbsp;&nbsp;<span class="text-sm">kg</span>
+                                </h4>
+                                <p class="text-xs text-gray-500 -mt-3 tracking-tighter font-medium">
+                                    +0% sinds vorige week
+                                </p>
+                            @else
+                                <h4 class="text-gray-400 text-xl font-medium tracking-tighter">
+                                    Niet ingesteld
+                                </h4>
+                                <p class="text-xs text-gray-500 -mt-3 tracking-tighter font-medium">
+                                    Voeg je gewicht toe
+                                </p>
+                            @endif
                         </div>
+                        <!-- Bench Press -->
                         <div class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem] flex flex-col gap-4">
                             <h3 class="text-[var(--text-color)] text-lg font-semibold tracking-tighter">Bench Press</h3>
-                            <h4 class="text-[var(--primary-color)] text-2xl font-bold tracking-tighter">85&nbsp;&nbsp;<span class="text-sm">kg</span></h4>
-                            <p class="text-xs text-green-500 -mt-3 tracking-tighter font-medium">+5 kg sinds start</p>
+                            @php
+                                $benchRecord = auth()->user()->performanceRecords()
+                                    ->where('exercise_type', 'bench_press')
+                                    ->latest()
+                                    ->first();
+                            @endphp
+                            @if($benchRecord)
+                                <h4 class="text-[var(--primary-color)] text-2xl font-bold tracking-tighter">
+                                    {{ $benchRecord->weight_kg }}&nbsp;&nbsp;<span class="text-sm">kg</span>
+                                </h4>
+                                <p class="text-xs text-gray-500 -mt-3 tracking-tighter font-medium">
+                                    +0% sinds vorige week
+                                </p>
+                            @else
+                                <h4 class="text-gray-400 text-xl font-medium tracking-tighter">
+                                    Niet ingesteld
+                                </h4>
+                                <p class="text-xs text-gray-500 -mt-3 tracking-tighter font-medium">
+                                    Voeg je eerste record toe
+                                </p>
+                            @endif
                         </div>
+                        <!-- Workout Streak (hardcoded) -->
                         <div class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem] flex flex-col gap-4">
                             <h3 class="text-[var(--text-color)] text-lg font-semibold tracking-tighter">Workout Streak</h3>
                             <div class="flex items-center gap-2 justify-between">
                                 @php
-                                    $streak = 12; // huidige streak
+                                    $streak = 1; // huidige streak
                                     $showDays = 6; // huidige dag + 5 extra
                                 @endphp
                                 @for($i = 0; $i < $showDays; $i++)
@@ -117,36 +221,64 @@
                     </div>
                     <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="flex flex-col gap-8">
-                            <div class="fade-in-up flex flex-col gap-4">
+                            <div class="flex flex-col gap-4">
                                 <h2 class="text-[var(--text-color)] text-2xl font-semibold tracking-tighter">Voedingsschema</h2>
                                 <div class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem]">
                                     @php
-                                        // Dummy data voor onze 30-jarige man
-                                        $gewicht = 83.4; // kg
-                                        $lengte = 185; // cm
-                                        $leeftijd = 30; // jaren
-                                        $geslacht = 'man';
-                                        $activiteitsFactor = 1.725; // dagelijks sporten
+                                    // Haal user data op
+                                    $profile = auth()->user()->profile;
+                                    $nutritionSettings = auth()->user()->nutritionSettings;
+
+                                    if ($profile && $nutritionSettings && $nutritionSettings->enabled) {
+                                        $gewicht = $profile->current_weight_kg;
+                                        $lengte = $profile->height_cm;
+                                        $leeftijd = now()->year - $profile->birth_year;
+                                        $geslacht = $profile->sex; // 'male' of 'female'
+                                        
+                                        // Activiteitsfactor op basis van activity_level
+                                        $activiteitsFactor = match($profile->activity_level) {
+                                            'sedentary' => 1.2,
+                                            'light' => 1.375,
+                                            'moderate' => 1.55,
+                                            'very' => 1.725,
+                                            default => 1.375,
+                                        };
 
                                         // BMR berekening (Mifflin-St Jeor)
-                                        if ($geslacht === 'man') {
+                                        if ($geslacht === 'male') {
                                             $bmr = 10 * $gewicht + 6.25 * $lengte - 5 * $leeftijd + 5;
                                         } else {
                                             $bmr = 10 * $gewicht + 6.25 * $lengte - 5 * $leeftijd - 161;
                                         }
 
                                         // Totale caloriebehoefte (TDEE)
-                                        $tdee = round($bmr * $activiteitsFactor);
+                                        $baseTdee = round($bmr * $activiteitsFactor);
+                                        
+                                        // Pas calorie-aanpassing toe indien ingesteld
+                                        $calorieAdjustment = 0;
+                                        if ($nutritionSettings->calorie_adjustment_pct) {
+                                            $percentage = (int) str_replace(['%', '+'], '', $nutritionSettings->calorie_adjustment_pct);
+                                            $calorieAdjustment = $percentage / 100;
+                                        }
+                                        
+                                        $tdee = round($baseTdee * (1 + $calorieAdjustment));
 
                                         // Macronutriënten
-                                        $eiwit = round($gewicht * 2); // gram
+                                        $eiwit = round($gewicht * 2); // 2g per kg lichaamsgewicht
                                         $eiwitKcal = $eiwit * 4;
 
-                                        $vetKcal = round($tdee * 0.25);
-                                        $vet = round($vetKcal / 9); // gram
+                                        $vetKcal = round($tdee * 0.25); // 25% van totale calorieën
+                                        $vet = round($vetKcal / 9); // 9 kcal per gram vet
 
                                         $koolhydratenKcal = $tdee - ($eiwitKcal + $vetKcal);
-                                        $koolhydraten = round($koolhydratenKcal / 4); // gram
+                                        $koolhydraten = round($koolhydratenKcal / 4); // 4 kcal per gram koolhydraten
+                                    } else {
+                                        // Fallback waarden als nutrition niet enabled is
+                                        $tdee = null;
+                                        $eiwit = null;
+                                        $vet = null;
+                                        $koolhydraten = null;
+                                    }
                                     @endphp
                                     <!-- Voorbeeld gebruik -->
                                     <div class="grid grid-cols-1">
@@ -193,7 +325,7 @@
                             </div>
                         </div>
                         <div class="flex flex-col gap-8">
-                            <div class="fade-in-up flex flex-col gap-4">
+                            <div class="flex flex-col gap-4">
                                 <h2 class="text-[var(--text-color)] text-2xl font-semibold tracking-tighter">AI Coach</h2>
                                 <div id="chatbot" class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem] flex flex-col gap-4">
                                     <div id="chat-messages" class="bg-[#f0f0f0] min-h-[350px] md:min-h-[200px] max-h-[350px] md:max-h-[200px] p-[1.5rem] rounded-[var(--border-radius)] flex flex-col gap-4 overflow-y-auto"></div>
@@ -266,159 +398,216 @@
                 </div>
             </div>
         </div>
-<script>
-    // Helper: simpele Markdown naar HTML converter
-    function formatMarkdown(text) {
-        return text
-            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")  // **bold**
-            .replace(/\*(.*?)\*/g, "<em>$1</em>")              // *italic*
-            .replace(/\n/g, "<br>");                           // newline
-    }
-
-    function isUserAtBottom(container) {
-        return container.scrollHeight - container.scrollTop - container.clientHeight < 5;
-    }
-
-    let autoScroll = true; // standaard volgen we de chat
-
-    const messagesDiv = document.getElementById("chat-messages");
-
-    // Luister naar scroll events → check of user onderaan is
-    messagesDiv.addEventListener("scroll", () => {
-        if (isUserAtBottom(messagesDiv)) {
-            autoScroll = true;
-        } else {
-            autoScroll = false;
-        }
-    });
-
-    document.getElementById("chat-send").addEventListener("click", async () => {
-        const input = document.getElementById("chat-input");
-
-        const userMsg = input.value.trim();
-        if (!userMsg) return;
-
-        // User bubble
-        const userBubble = document.createElement("p");
-        userBubble.className = "py-2 px-3 bg-[var(--text-color)] text-white rounded-[var(--border-radius)] w-fit max-w-[80%] text-sm";
-        userBubble.innerText = userMsg;
-        messagesDiv.appendChild(userBubble);
-
-        input.value = "";
-
-        // Typing placeholder
-        const typingBubble = document.createElement("p");
-        typingBubble.id = "typing-bubble";
-        typingBubble.className = "text-[var(--text-color)] max-w-[80%] text-xs opacity-70";
-        typingBubble.innerText = "AI Coach is aan het typen...";
-        messagesDiv.appendChild(typingBubble);
-        if (autoScroll) messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-        try {
-            let response = await fetch("/chat/personal-trainer", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({ message: userMsg })
-            });
-
-            let data = await response.json();
-
-            typingBubble.remove();
-
-            const botBubble = document.createElement("p");
-            botBubble.className = "py-2 px-3 bg-white text-[var(--text-color)] rounded-[var(--border-radius)] w-fit max-w-[80%] text-sm";
-            messagesDiv.appendChild(botBubble);
-
-            // Eerst Markdown naar HTML omzetten
-            const rawText = data.reply || "⚠️ Geen antwoord ontvangen.";
-            const replyHTML = formatMarkdown(rawText);
-
-            let i = 0;
-            const speed = 18; // ms per letter
-            botBubble.innerHTML = ""; // leegmaken
-
-            function typeWriter() {
-                if (i < replyHTML.length) {
-                    // Als het een <br> is → hele tag ineens
-                    if (replyHTML.substring(i, i + 4) === "<br>") {
-                        botBubble.innerHTML += "<br>";
-                        i += 4;
+        <script>
+            function accountSetup() {
+                return {
+                    showModal: true,
+                    loading: false,
+                    form: {
+                        name: '',
+                        email: '',
+                        password: '',
+                        password_confirmation: ''
+                    },
+                    
+                    async submitForm() {
+                        if (this.form.password !== this.form.password_confirmation) {
+                            alert('Wachtwoorden komen niet overeen');
+                            return;
+                        }
+                        
+                        this.loading = true;
+                        
+                        try {
+                            const response = await fetch('/account/setup', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                },
+                                body: JSON.stringify(this.form)
+                            });
+                            
+                            const data = await response.json();
+                            
+                            if (data.success) {
+                                this.showModal = false;
+                                // Optioneel: toon success message
+                                alert('Account succesvol ingesteld!');
+                                // Reload page om temp account flag te verwijderen
+                                window.location.reload();
+                            } else {
+                                alert(data.message || 'Er ging iets mis');
+                            }
+                        } catch (error) {
+                            alert('Netwerkfout. Probeer het opnieuw.');
+                        }
+                        
+                        this.loading = false;
+                    },
+                    
+                    skipSetup() {
+                        // Gebruiker kan popup sluiten, maar krijgt het later weer te zien
+                        this.showModal = false;
+                        
+                        // Optioneel: stel een cookie/localStorage in om niet te vaak te vragen
+                        localStorage.setItem('account_setup_skipped', Date.now());
                     }
-                    // Als het een <strong> is → hele tag ineens
-                    else if (replyHTML.substring(i, i + 7) === "<strong") {
-                        const end = replyHTML.indexOf(">", i) + 1;
-                        botBubble.innerHTML += replyHTML.substring(i, end);
-                        i = end;
-                    }
-                    // Als het een </strong> is → hele tag ineens
-                    else if (replyHTML.substring(i, i + 9) === "</strong>") {
-                        const end = replyHTML.indexOf(">", i) + 1;
-                        botBubble.innerHTML += replyHTML.substring(i, end);
-                        i = end;
-                    }
-                    // Als het een <em> is → hele tag ineens
-                    else if (replyHTML.substring(i, i + 3) === "<em") {
-                        const end = replyHTML.indexOf(">", i) + 1;
-                        botBubble.innerHTML += replyHTML.substring(i, end);
-                        i = end;
-                    }
-                    // Als het een </em> is → hele tag ineens
-                    else if (replyHTML.substring(i, i + 4) === "</em") {
-                        const end = replyHTML.indexOf(">", i) + 1;
-                        botBubble.innerHTML += replyHTML.substring(i, end);
-                        i = end;
-                    }
-                    // Andere tags of normaal karakter
-                    else if (replyHTML.substring(i, i + 2) === "</") {
-                        const end = replyHTML.indexOf(">", i) + 1;
-                        botBubble.innerHTML += replyHTML.substring(i, end);
-                        i = end;
-                    } else {
-                        botBubble.innerHTML += replyHTML.charAt(i);
-                        i++;
-                    }
-
-                    // ✅ Alleen auto-scroll als user onderaan zit
-                    if (autoScroll) {
-                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                    }
-
-                    setTimeout(typeWriter, speed);
                 }
             }
-            typeWriter();
 
-        } catch (error) {
-            typingBubble.innerText = "⚠️ Er ging iets mis, probeer opnieuw.";
-        }
-    });
+            // Helper: simpele Markdown naar HTML converter
+            function formatMarkdown(text) {
+                return text
+                    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")  // **bold**
+                    .replace(/\*(.*?)\*/g, "<em>$1</em>")              // *italic*
+                    .replace(/\n/g, "<br>");                           // newline
+            }
 
-    // Enter-to-send
-    document.getElementById("chat-input").addEventListener("keypress", function(e) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            document.getElementById("chat-send").click();
-        }
-    });
+            function isUserAtBottom(container) {
+                return container.scrollHeight - container.scrollTop - container.clientHeight < 5;
+            }
 
-    gsap.registerPlugin(ScrollTrigger);
-    // Fade-in van onder (standaard)
-    gsap.utils.toArray(".fade-in-up").forEach((el) => {
-        gsap.from(el, {
-        opacity: 0,
-        y: 40,
-        duration: 1,
-        ease: "power2.out",
-        scrollTrigger: {
-            trigger: el,
-            start: "top 70%",
-            toggleActions: "play none none none",
-        }
-        });
-    });
-</script>
+            let autoScroll = true; // standaard volgen we de chat
+
+            const messagesDiv = document.getElementById("chat-messages");
+
+            // Luister naar scroll events → check of user onderaan is
+            messagesDiv.addEventListener("scroll", () => {
+                if (isUserAtBottom(messagesDiv)) {
+                    autoScroll = true;
+                } else {
+                    autoScroll = false;
+                }
+            });
+
+            document.getElementById("chat-send").addEventListener("click", async () => {
+                const input = document.getElementById("chat-input");
+
+                const userMsg = input.value.trim();
+                if (!userMsg) return;
+
+                // User bubble
+                const userBubble = document.createElement("p");
+                userBubble.className = "py-2 px-3 bg-[var(--text-color)] text-white rounded-[var(--border-radius)] w-fit max-w-[80%] text-sm";
+                userBubble.innerText = userMsg;
+                messagesDiv.appendChild(userBubble);
+
+                input.value = "";
+
+                // Typing placeholder
+                const typingBubble = document.createElement("p");
+                typingBubble.id = "typing-bubble";
+                typingBubble.className = "text-[var(--text-color)] max-w-[80%] text-xs opacity-70";
+                typingBubble.innerText = "AI Coach is aan het typen...";
+                messagesDiv.appendChild(typingBubble);
+                if (autoScroll) messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+                try {
+                    let response = await fetch("/chat/personal-trainer", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({ message: userMsg })
+                    });
+
+                    let data = await response.json();
+
+                    typingBubble.remove();
+
+                    const botBubble = document.createElement("p");
+                    botBubble.className = "py-2 px-3 bg-white text-[var(--text-color)] rounded-[var(--border-radius)] w-fit max-w-[80%] text-sm";
+                    messagesDiv.appendChild(botBubble);
+
+                    // Eerst Markdown naar HTML omzetten
+                    const rawText = data.reply || "⚠️ Geen antwoord ontvangen.";
+                    const replyHTML = formatMarkdown(rawText);
+
+                    let i = 0;
+                    const speed = 18; // ms per letter
+                    botBubble.innerHTML = ""; // leegmaken
+
+                    function typeWriter() {
+                        if (i < replyHTML.length) {
+                            // Als het een <br> is → hele tag ineens
+                            if (replyHTML.substring(i, i + 4) === "<br>") {
+                                botBubble.innerHTML += "<br>";
+                                i += 4;
+                            }
+                            // Als het een <strong> is → hele tag ineens
+                            else if (replyHTML.substring(i, i + 7) === "<strong") {
+                                const end = replyHTML.indexOf(">", i) + 1;
+                                botBubble.innerHTML += replyHTML.substring(i, end);
+                                i = end;
+                            }
+                            // Als het een </strong> is → hele tag ineens
+                            else if (replyHTML.substring(i, i + 9) === "</strong>") {
+                                const end = replyHTML.indexOf(">", i) + 1;
+                                botBubble.innerHTML += replyHTML.substring(i, end);
+                                i = end;
+                            }
+                            // Als het een <em> is → hele tag ineens
+                            else if (replyHTML.substring(i, i + 3) === "<em") {
+                                const end = replyHTML.indexOf(">", i) + 1;
+                                botBubble.innerHTML += replyHTML.substring(i, end);
+                                i = end;
+                            }
+                            // Als het een </em> is → hele tag ineens
+                            else if (replyHTML.substring(i, i + 4) === "</em") {
+                                const end = replyHTML.indexOf(">", i) + 1;
+                                botBubble.innerHTML += replyHTML.substring(i, end);
+                                i = end;
+                            }
+                            // Andere tags of normaal karakter
+                            else if (replyHTML.substring(i, i + 2) === "</") {
+                                const end = replyHTML.indexOf(">", i) + 1;
+                                botBubble.innerHTML += replyHTML.substring(i, end);
+                                i = end;
+                            } else {
+                                botBubble.innerHTML += replyHTML.charAt(i);
+                                i++;
+                            }
+
+                            // ✅ Alleen auto-scroll als user onderaan zit
+                            if (autoScroll) {
+                                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                            }
+
+                            setTimeout(typeWriter, speed);
+                        }
+                    }
+                    typeWriter();
+
+                } catch (error) {
+                    typingBubble.innerText = "⚠️ Er ging iets mis, probeer opnieuw.";
+                }
+            });
+
+            // Enter-to-send
+            document.getElementById("chat-input").addEventListener("keypress", function(e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    document.getElementById("chat-send").click();
+                }
+            });
+
+            gsap.registerPlugin(ScrollTrigger);
+            // Fade-in van onder (standaard)
+            gsap.utils.toArray(".fade-in-up").forEach((el) => {
+                gsap.from(el, {
+                opacity: 0,
+                y: 40,
+                duration: 1,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 70%",
+                    toggleActions: "play none none none",
+                }
+                });
+            });
+        </script>
     </body>
 </html>

@@ -4,14 +4,22 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AICoachController;
+use App\Http\Controllers\OnboardingController;
+use App\Http\Controllers\AccountSetupController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Default Routes
+Route::get('/', function () { return view('welcome'); });
 
+// Onboarding Routes
+Route::get('/onboarding/fitness', [OnboardingController::class, 'show'])->name('onboarding.fitness');
+Route::post('/onboarding/fitness', [OnboardingController::class, 'store'])->name('onboarding.fitness.store');
+
+// Auth Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/app', function () { return view('dashboard.index', ['user' => Auth::user()]); })->middleware('auth');
+// App Related Routes
+Route::get('/app', function () { return view('dashboard.index', ['user' => Auth::user()]); })->middleware('auth')->name('app');
+Route::post('/account/setup', [AccountSetupController::class, 'store'])->middleware('auth');
 Route::post('/chat/personal-trainer', [AICoachController::class, 'chat']);

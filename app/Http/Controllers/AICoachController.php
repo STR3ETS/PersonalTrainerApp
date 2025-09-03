@@ -14,17 +14,20 @@ class AICoachController extends Controller
         ]);
 
         $userMessage = strtolower($validated['message']);
-        $mode = 'default'; // altijd starten in default
+        $mode = 'default';
 
         // Mode wisselen, maar NIET opslaan in sessie
         if (str_contains($userMessage, 'ga mo mode')) {
             $mode = 'mo';
+            // Sla bericht van Mo ook in de sessie op
+            session()->push('chat_history', ['role' => 'assistant', 'content' => "Fakka broertje, het is je favoriete straatjunkie Mo hier. Ik ga jou die summer body geven niffo! Vertel me waarbij ik je moet helpen en ik fix die dingen."]);
             return response()->json([
                 'reply' => "Fakka broertje, het is je favoriete straatjunkie Mo hier. Ik ga jou die summer body geven niffo! Vertel me waarbij ik je moet helpen en ik fix die dingen."
             ]);
         }
 
         if (str_contains($userMessage, 'stop mo mode')) {
+            session()->push('chat_history', ['role' => 'assistant', 'content' => "✅ Terug naar de normale coach mode 👊"]);
             return response()->json([
                 'reply' => "✅ Terug naar de normale coach mode 👊"
             ]);
@@ -46,7 +49,7 @@ class AICoachController extends Controller
         
         Geen geen tekens zoals — in je berichten!";
 
-        // Mo mode activeren (alleen tijdelijk voor dit bericht)
+        // Mo mode activeren
         if ($mode === 'mo') {
             $systemPrompt .= "\n\n🔄 EXTRA: Je staat nu in 'Mo mode'.  
             - Je bent een Turkse straatjongen, mattie van de buurt.  
@@ -62,17 +65,34 @@ class AICoachController extends Controller
             Houd je antwoorden kort en krachtig!!!! DIT IS HEEL BELANGRIJK";
         }
 
+        // Haal eerdere chatgeschiedenis op uit sessie
+        $history = session('chat_history', []);
+
+        // Voeg system prompt altijd aan het begin toe
+        $messages = [
+            ['role' => 'system', 'content' => $systemPrompt],
+        ];
+
+        // Voeg eerdere berichten toe
+        $messages = array_merge($messages, $history);
+
+        // Voeg huidige user bericht toe
+        $messages[] = ['role' => 'user', 'content' => $validated['message']];
+
         $response = $client->chat()->create([
             'model' => 'gpt-4o-mini',
-            'temperature' => 0.9, // meer variatie
-            'messages' => [
-                ['role' => 'system', 'content' => $systemPrompt],
-                ['role' => 'user', 'content' => $validated['message']],
-            ],
+            'temperature' => 0.9,
+            'messages' => $messages,
         ]);
 
+        $reply = $response->choices[0]->message->content;
+
+        // Update sessiegeschiedenis
+        session()->push('chat_history', ['role' => 'user', 'content' => $validated['message']]);
+        session()->push('chat_history', ['role' => 'assistant', 'content' => $reply]);
+
         return response()->json([
-            'reply' => $response->choices[0]->message->content,
+            'reply' => $reply,
         ]);
     }
 }
