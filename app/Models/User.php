@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -11,63 +13,53 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'password', 'is_temp_account',
+        'name',
+        'email',
+        'password',
+        'is_temp_account',
     ];
 
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
-
-    public function profile()
+    protected function casts(): array
     {
-        return $this->hasOne(UserProfile::class);
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'is_temp_account' => 'boolean',
+        ];
     }
 
-    public function activeGoal()
+    public function profile(): HasOne
     {
-        return $this->hasOne(FitnessGoal::class)->where('is_active', true);
+        return $this->hasOne(Profile::class);
     }
 
-    public function goals()
+    public function goals(): HasMany
     {
-        return $this->hasMany(FitnessGoal::class);
+        return $this->hasMany(Goal::class);
     }
 
-    public function activeTrainingSchedule()
-    {
-        return $this->hasOne(TrainingSchedule::class)->where('is_active', true);
-    }
-
-    public function trainingSchedules()
+    public function trainingSchedules(): HasMany
     {
         return $this->hasMany(TrainingSchedule::class);
     }
 
-    public function performanceRecords()
+    public function trainingBackground(): HasOne
     {
-        return $this->hasMany(PerformanceRecord::class);
+        return $this->hasOne(TrainingBackground::class);
     }
 
-    public function nutritionSettings()
+    public function heartRateData(): HasOne
     {
-        return $this->hasOne(NutritionSettings::class);
+        return $this->hasOne(HeartRateData::class);
     }
 
-    public function notificationSettings()
+    public function testResults(): HasMany
     {
-        return $this->hasOne(NotificationSettings::class);
-    }
-
-    public function getLatestBenchPressRecord()
-    {
-        return $this->performanceRecords()
-            ->where('exercise_type', 'bench_press')
-            ->latest()
-            ->first();
+        return $this->hasMany(TestResult::class);
     }
 }

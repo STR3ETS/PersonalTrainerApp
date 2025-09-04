@@ -6,26 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('training_schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->integer('days_per_week');
-            $table->integer('session_minutes');
-            $table->json('weekdays'); // ['mon', 'wed', 'fri']
+            $table->integer('trainings_per_week');
+            $table->integer('session_duration');
+            $table->boolean('multiple_per_day')->default(false);
+            $table->string('multiple_when')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('training_schedules');
     }

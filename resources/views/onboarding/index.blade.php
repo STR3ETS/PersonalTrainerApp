@@ -36,529 +36,552 @@
             class="max-w-[560px] w-full h-auto p-[1.5rem] rounded-[var(--border-radius)] bg-white"
             x-data='trainerOnboarding({ texts: window.TRAINER_TEXTS })'
             x-init="start()">
-
-        <div class="text-[var(--text-color)]">
-            <div class="flex items-center gap-2 mb-4">
-            <div class="w-6 h-6 bg-[#215558]/10 rounded-full overflow-hidden">
-                <img src="{{ asset('assets/trainer.jpg') }}" width="64" height="64" loading="lazy" alt="Coach">
-            </div>
-            <h4 class="leading-tight text-sm font-semibold text-[#343434]">Coach</h4>
-            </div>
-
-            <!-- Typewriter -->
-            <p class="text-sm text-[var(--text-color)] min-h-[20px] mb-4" x-html="typed"></p>
-
-            <!-- 0: Start -->
-            <div x-show="doneTyping && current === 0" x-transition class="pt-3">
-            <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center whitespace-nowrap">
-                Start mijn intake
-            </button>
-            </div>
-
-            <!-- 1: Doel -->
-            <div x-show="doneTyping && current === 1" x-transition class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-7">
-            <button x-on:click="setAndNext('goal_type','cut')"  class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap">Afvallen</button>
-            <button x-on:click="setAndNext('goal_type','bulk')" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap">Spieropbouw</button>
-            <button x-on:click="setAndNext('goal_type','fit')"  class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap">Fitter worden</button>
-            </div>
-
-            <!-- 2: Target (branch) -->
-            <div x-show="doneTyping && current === 2" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
-            <p class="text-xs font-medium text-[var(--text-color)] -mb-2"
-                x-text="form.goal_type === 'fit' ? 'Wat is je specifieke doel?' : 'Wat is je streefgewicht?'">
-            </p>
-            <template x-if="form.goal_type !== 'fit'">
-                <input type="number" step="0.1" min="30" max="300" placeholder="Streefgewicht (kg)"
-                    x-model="form.target_weight_kg"
-                    class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]" />
-            </template>
-            <template x-if="form.goal_type === 'fit'">
-                <input type="text" placeholder="Bijv. 5 km hardlopen / meer energie"
-                    x-model="form.fit_goal_text"
-                    class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]" />
-            </template>
-            <div class="flex items-center gap-2 mt-4">
-                <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.76559 13.3656C7.61557 13.5156 7.41212 13.5998 7.19999 13.5998C6.98786 13.5998 6.78441 13.5156 6.63439 13.3656L1.83439 8.56562C1.68441 8.4156 1.60016 8.21215 1.60016 8.00002C1.60016 7.78789 1.68441 7.58444 1.83439 7.43442L6.63439 2.63442C6.78527 2.48869 6.98735 2.40806 7.19711 2.40988C7.40687 2.4117 7.60752 2.49584 7.75584 2.64417C7.90417 2.79249 7.9883 2.99314 7.99013 3.2029C7.99195 3.41266 7.91131 3.61474 7.76559 3.76562L4.33119 7.20002H13.6C13.8122 7.20002 14.0156 7.28431 14.1657 7.43434C14.3157 7.58436 14.4 7.78785 14.4 8.00002C14.4 8.21219 14.3157 8.41568 14.1657 8.56571C14.0156 8.71574 13.8122 8.80002 13.6 8.80002H4.33119L7.76559 12.2344C7.91556 12.3844 7.99982 12.5879 7.99982 12.8C7.99982 13.0122 7.91556 13.2156 7.76559 13.3656V13.3656Z" fill="white"/>
-                    </svg>
-                </button>
-                <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
-            </div>
-            </div>
-
-            <!-- 3: Target date -->
-            <div x-show="doneTyping && current === 3" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
-            <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Selecteer een datum</p>
-            <input type="date" x-model="form.target_date"
-                    class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
-            <div class="flex items-center gap-2 mt-4">
-                <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.76559 13.3656C7.61557 13.5156 7.41212 13.5998 7.19999 13.5998C6.98786 13.5998 6.78441 13.5156 6.63439 13.3656L1.83439 8.56562C1.68441 8.4156 1.60016 8.21215 1.60016 8.00002C1.60016 7.78789 1.68441 7.58444 1.83439 7.43442L6.63439 2.63442C6.78527 2.48869 6.98735 2.40806 7.19711 2.40988C7.40687 2.4117 7.60752 2.49584 7.75584 2.64417C7.90417 2.79249 7.9883 2.99314 7.99013 3.2029C7.99195 3.41266 7.91131 3.61474 7.76559 3.76562L4.33119 7.20002H13.6C13.8122 7.20002 14.0156 7.28431 14.1657 7.43434C14.3157 7.58436 14.4 7.78785 14.4 8.00002C14.4 8.21219 14.3157 8.41568 14.1657 8.56571C14.0156 8.71574 13.8122 8.80002 13.6 8.80002H4.33119L7.76559 12.2344C7.91556 12.3844 7.99982 12.5879 7.99982 12.8C7.99982 13.0122 7.91556 13.2156 7.76559 13.3656V13.3656Z" fill="white"/>
-                    </svg>
-                </button>
-                <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
-            </div>
-            </div>
-
-            <!-- 4: Measurements & profile -->
-            <div x-show="doneTyping && current === 4" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
-            <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Wat is je huidige gewicht?</p>
-            <input type="number" step="0.1" min="30" max="300" placeholder="Huidig gewicht (kg)"
-                    x-model="form.current_weight_kg"
-                    class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
-            <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Hoe lang ben je?</p>
-            <input type="number" min="120" max="230" placeholder="Lengte (cm)"
-                    x-model="form.height_cm"
-                    class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
-            <p class="text-xs font-medium text-[var(--text-color)] -mb-2">In welk jaar ben je geboren?</p>
-            <div class="grid grid-cols-3 gap-2">
-                <input type="number" min="1930" max="2020" placeholder="Geboortejaar"
-                    x-model="form.birth_year"
-                    class="outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
-                    <button x-on:click="form.sex='male'; saveLocal()"
-                        :class="{'bg-gray-300': form.sex==='male', 'bg-gray-100': form.sex!=='male'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Man</button>
-                    <button x-on:click="form.sex='female'; saveLocal()"
-                    :class="{'bg-gray-300': form.sex==='female', 'bg-gray-100': form.sex!=='female'}"
-                    class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Vrouw</button>
-            </div>
-            <div class="flex items-center gap-2 mt-4">
-                <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.76559 13.3656C7.61557 13.5156 7.41212 13.5998 7.19999 13.5998C6.98786 13.5998 6.78441 13.5156 6.63439 13.3656L1.83439 8.56562C1.68441 8.4156 1.60016 8.21215 1.60016 8.00002C1.60016 7.78789 1.68441 7.58444 1.83439 7.43442L6.63439 2.63442C6.78527 2.48869 6.98735 2.40806 7.19711 2.40988C7.40687 2.4117 7.60752 2.49584 7.75584 2.64417C7.90417 2.79249 7.9883 2.99314 7.99013 3.2029C7.99195 3.41266 7.91131 3.61474 7.76559 3.76562L4.33119 7.20002H13.6C13.8122 7.20002 14.0156 7.28431 14.1657 7.43434C14.3157 7.58436 14.4 7.78785 14.4 8.00002C14.4 8.21219 14.3157 8.41568 14.1657 8.56571C14.0156 8.71574 13.8122 8.80002 13.6 8.80002H4.33119L7.76559 12.2344C7.91556 12.3844 7.99982 12.5879 7.99982 12.8C7.99982 13.0122 7.91556 13.2156 7.76559 13.3656V13.3656Z" fill="white"/>
-                    </svg>
-                </button>
-                <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
-            </div>
-            </div>
-
-            <!-- 5: Activity & experience -->
-            <div x-show="doneTyping && current === 5" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
-            <!-- Activity (blijft op deze stap, geen auto-next) -->
-            <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Hoe actief ben je tijdens jouw werk?</p>
-            <div class="grid grid-cols-2 gap-2">
-                <button type="button"
-                        x-on:click="form.activity_level='sedentary'; saveLocal()"
-                        :class="{'bg-gray-300': form.activity_level==='sedentary', 'bg-gray-100': form.activity_level!=='sedentary'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer"
-                        aria-pressed="form.activity_level==='sedentary'">Zittend</button>
-                <button type="button"
-                        x-on:click="form.activity_level='light'; saveLocal()"
-                        :class="{'bg-gray-300': form.activity_level==='light', 'bg-gray-100': form.activity_level!=='light'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer"
-                        aria-pressed="form.activity_level==='light'">Licht actief</button>
-                <button type="button"
-                        x-on:click="form.activity_level='moderate'; saveLocal()"
-                        :class="{'bg-gray-300': form.activity_level==='moderate', 'bg-gray-100': form.activity_level!=='moderate'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer"
-                        aria-pressed="form.activity_level==='moderate'">Actief</button>
-                <button type="button"
-                        x-on:click="form.activity_level='very'; saveLocal()"
-                        :class="{'bg-gray-300': form.activity_level==='very', 'bg-gray-100': form.activity_level!=='very'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer"
-                        aria-pressed="form.activity_level==='very'">Heel actief</button>
-            </div>
-            <!-- Experience (zelfde gedrag) -->
-            <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Wat is je trainingsniveau?</p>
-            <div class="grid grid-cols-3 gap-2">
-                <button type="button"
-                        x-on:click="form.experience_level='beginner'; saveLocal()"
-                        :class="{'bg-gray-300': form.experience_level==='beginner', 'bg-gray-100': form.experience_level!=='beginner'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer"
-                        aria-pressed="form.experience_level==='beginner'">Beginner</button>
-                <button type="button"
-                        x-on:click="form.experience_level='intermediate'; saveLocal()"
-                        :class="{'bg-gray-300': form.experience_level==='intermediate', 'bg-gray-100': form.experience_level!=='intermediate'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer"
-                        aria-pressed="form.experience_level==='intermediate'">Gemiddeld</button>
-                <button type="button"
-                        x-on:click="form.experience_level='advanced'; saveLocal()"
-                        :class="{'bg-gray-300': form.experience_level==='advanced', 'bg-gray-100': form.experience_level!=='advanced'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer"
-                        aria-pressed="form.experience_level==='advanced'">Gevorderd</button>
-            </div>
-            <!-- Navigatie -->
-            <div class="flex items-center gap-2 mt-4">
-                <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.76559 13.3656C7.61557 13.5156 7.41212 13.5998 7.19999 13.5998C6.98786 13.5998 6.78441 13.5156 6.63439 13.3656L1.83439 8.56562C1.68441 8.4156 1.60016 8.21215 1.60016 8.00002C1.60016 7.78789 1.68441 7.58444 1.83439 7.43442L6.63439 2.63442C6.78527 2.48869 6.98735 2.40806 7.19711 2.40988C7.40687 2.4117 7.60752 2.49584 7.75584 2.64417C7.90417 2.79249 7.9883 2.99314 7.99013 3.2029C7.99195 3.41266 7.91131 3.61474 7.76559 3.76562L4.33119 7.20002H13.6C13.8122 7.20002 14.0156 7.28431 14.1657 7.43434C14.3157 7.58436 14.4 7.78785 14.4 8.00002C14.4 8.21219 14.3157 8.41568 14.1657 8.56571C14.0156 8.71574 13.8122 8.80002 13.6 8.80002H4.33119L7.76559 12.2344C7.91556 12.3844 7.99982 12.5879 7.99982 12.8C7.99982 13.0122 7.91556 13.2156 7.76559 13.3656V13.3656Z" fill="white"/>
-                    </svg>
-                </button>
-                <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
-            </div>
-            </div>
-
-            <!-- 6: Location & equipment -->
-            <div x-show="doneTyping && current === 6" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
-            <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Waar train je?</p>
-            <div class="grid grid-cols-2 gap-2">
-                <button x-on:click="form.train_location='home'; saveLocal()"
-                        :class="{'bg-gray-300': form.train_location==='home', 'bg-gray-100': form.train_location!=='home'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Thuis</button>
-                <button x-on:click="form.train_location='gym'; saveLocal()"
-                        :class="{'bg-gray-300': form.train_location==='gym', 'bg-gray-100': form.train_location!=='gym'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Gym</button>
-            </div>
-            <div x-show="form.train_location==='home'" class="grid grid-cols-2 gap-2">
-                <p class="text-xs col-span-2 font-medium text-[var(--text-color)]">Wat heb je beschikbaar thuis? <span class="opacity-50 text-[10px]">(Meerdere opties mogelijk)</span></p>
-                <button x-on:click="toggleInArray('equipment','mat')"
-                        :class="{'bg-gray-300': isSelected('equipment','mat'), 'bg-gray-100': !isSelected('equipment','mat')}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Matje</button>
-                <button x-on:click="toggleInArray('equipment','dumbbells')"
-                        :class="{'bg-gray-300': isSelected('equipment','dumbbells'), 'bg-gray-100': !isSelected('equipment','dumbbells')}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Dumbbells</button>
-                <button x-on:click="toggleInArray('equipment','bands')"
-                        :class="{'bg-gray-300': isSelected('equipment','bands'), 'bg-gray-100': !isSelected('equipment','bands')}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Bands</button>
-                <button x-on:click="toggleInArray('equipment','none')"
-                        :class="{'bg-gray-300': isSelected('equipment','none'), 'bg-gray-100': !isSelected('equipment','none')}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Niks</button>
-            </div>
-            <div class="flex items-center gap-2 mt-4">
-                <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.76559 13.3656C7.61557 13.5156 7.41212 13.5998 7.19999 13.5998C6.98786 13.5998 6.78441 13.5156 6.63439 13.3656L1.83439 8.56562C1.68441 8.4156 1.60016 8.21215 1.60016 8.00002C1.60016 7.78789 1.68441 7.58444 1.83439 7.43442L6.63439 2.63442C6.78527 2.48869 6.98735 2.40806 7.19711 2.40988C7.40687 2.4117 7.60752 2.49584 7.75584 2.64417C7.90417 2.79249 7.9883 2.99314 7.99013 3.2029C7.99195 3.41266 7.91131 3.61474 7.76559 3.76562L4.33119 7.20002H13.6C13.8122 7.20002 14.0156 7.28431 14.1657 7.43434C14.3157 7.58436 14.4 7.78785 14.4 8.00002C14.4 8.21219 14.3157 8.41568 14.1657 8.56571C14.0156 8.71574 13.8122 8.80002 13.6 8.80002H4.33119L7.76559 12.2344C7.91556 12.3844 7.99982 12.5879 7.99982 12.8C7.99982 13.0122 7.91556 13.2156 7.76559 13.3656V13.3656Z" fill="white"/>
-                    </svg>
-                </button>
-                <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
-            </div>
-            </div>
-
-            <!-- 7: Planning -->
-            <div x-show="doneTyping && current === 7" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
-            <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Aantal dagen per week</p>
-            <div class="grid grid-cols-6 gap-2">
-                <template x-for="d in [2,3,4,5,6,7]" :key="'d'+d">
-                <button x-on:click="form.days_per_week=d; saveLocal()"
-                        :class="{'bg-gray-300': form.days_per_week===d, 'bg-gray-100': form.days_per_week!==d}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer" x-text="d + 'x'"></button>
-                </template>
-            </div>
-            <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Per sessie</p>
-            <div class="grid grid-cols-4 gap-2">
-                <template x-for="m in [30,60,90,120]" :key="'m'+m">
-                <button x-on:click="form.session_minutes=m; saveLocal()"
-                        :class="{'bg-gray-300': form.session_minutes===m, 'bg-gray-100': form.session_minutes!==m}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer" x-text="m + ' min'"></button>
-                </template>
-            </div>
-            <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Welke dagen?</p>
-            <div class="grid grid-cols-7 gap-1">
-                <template x-for="wd in weekdaysMap" :key="wd.key">
-                <button x-on:click="toggleInArray('weekdays', wd.key)"
-                        :class="{'bg-gray-300': isSelected('weekdays', wd.key), 'bg-gray-100': !isSelected('weekdays', wd.key)}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer" x-text="wd.label"></button>
-                </template>
-            </div>
-            <div class="flex items-center gap-2 mt-4">
-                <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.76559 13.3656C7.61557 13.5156 7.41212 13.5998 7.19999 13.5998C6.98786 13.5998 6.78441 13.5156 6.63439 13.3656L1.83439 8.56562C1.68441 8.4156 1.60016 8.21215 1.60016 8.00002C1.60016 7.78789 1.68441 7.58444 1.83439 7.43442L6.63439 2.63442C6.78527 2.48869 6.98735 2.40806 7.19711 2.40988C7.40687 2.4117 7.60752 2.49584 7.75584 2.64417C7.90417 2.79249 7.9883 2.99314 7.99013 3.2029C7.99195 3.41266 7.91131 3.61474 7.76559 3.76562L4.33119 7.20002H13.6C13.8122 7.20002 14.0156 7.28431 14.1657 7.43434C14.3157 7.58436 14.4 7.78785 14.4 8.00002C14.4 8.21219 14.3157 8.41568 14.1657 8.56571C14.0156 8.71574 13.8122 8.80002 13.6 8.80002H4.33119L7.76559 12.2344C7.91556 12.3844 7.99982 12.5879 7.99982 12.8C7.99982 13.0122 7.91556 13.2156 7.76559 13.3656V13.3656Z" fill="white"/>
-                    </svg>
-                </button>
-                <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
-            </div>
-            </div>
-
-            <!-- 8: Bench -->
-            <div x-show="doneTyping && current === 8" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
-            <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Hoeveel reps maximaal?</p>
-            <div class="grid grid-cols-4 gap-2">
-                <button x-on:click="form.bench_mode='1rm'; saveLocal()"
-                        :class="{'bg-gray-300': form.bench_mode==='1rm', 'bg-gray-100': form.bench_mode!=='1rm'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">1 rep</button>
-                <button x-on:click="form.bench_mode='5reps'; saveLocal()"
-                        :class="{'bg-gray-300': form.bench_mode==='5reps', 'bg-gray-100': form.bench_mode!=='5reps'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">5 reps</button>
-                <button x-on:click="form.bench_mode='10reps'; saveLocal()"
-                        :class="{'bg-gray-300': form.bench_mode==='10reps', 'bg-gray-100': form.bench_mode!=='10reps'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">10 reps</button>
-                <button x-on:click="form.bench_mode='unknown'; form.bench_weight_kg=''; saveLocal()"
-                        :class="{'bg-gray-300': form.bench_mode==='unknown', 'bg-gray-100': form.bench_mode!=='unknown'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Weet ik niet</button>
-            </div>
-            <div x-show="form.bench_mode!=='unknown'" class="flex flex-col gap-2">
-                <p class="text-xs font-medium text-[var(--text-color)]">Op welk gewicht?</p>
-                <input type="number" step="0.5" min="20" max="300" placeholder="Gewicht (kg)"
-                    x-model="form.bench_weight_kg"
-                    class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
-            </div>
-            <div class="flex items-center gap-2 mt-4">
-                <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.76559 13.3656C7.61557 13.5156 7.41212 13.5998 7.19999 13.5998C6.98786 13.5998 6.78441 13.5156 6.63439 13.3656L1.83439 8.56562C1.68441 8.4156 1.60016 8.21215 1.60016 8.00002C1.60016 7.78789 1.68441 7.58444 1.83439 7.43442L6.63439 2.63442C6.78527 2.48869 6.98735 2.40806 7.19711 2.40988C7.40687 2.4117 7.60752 2.49584 7.75584 2.64417C7.90417 2.79249 7.9883 2.99314 7.99013 3.2029C7.99195 3.41266 7.91131 3.61474 7.76559 3.76562L4.33119 7.20002H13.6C13.8122 7.20002 14.0156 7.28431 14.1657 7.43434C14.3157 7.58436 14.4 7.78785 14.4 8.00002C14.4 8.21219 14.3157 8.41568 14.1657 8.56571C14.0156 8.71574 13.8122 8.80002 13.6 8.80002H4.33119L7.76559 12.2344C7.91556 12.3844 7.99982 12.5879 7.99982 12.8C7.99982 13.0122 7.91556 13.2156 7.76559 13.3656V13.3656Z" fill="white"/>
-                    </svg>
-                </button>
-                <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
-            </div>
-            </div>
-
-            <!-- 9: Injuries -->
-            <div x-show="doneTyping && current === 9" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
-            <div class="grid grid-cols-3 gap-2">
-                <p class="text-xs col-span-3 font-medium text-[var(--text-color)]">Heb je momenteel blessures? <span class="opacity-50 text-[10px]">(Optioneel, Meerdere opties mogelijk)</span></p>
-                <button x-on:click="toggleInArray('injuries','knee')"
-                        :class="{'bg-gray-300': isSelected('injuries','knee'), 'bg-gray-100': !isSelected('injuries','knee')}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Knie</button>
-                <button x-on:click="toggleInArray('injuries','back')"
-                        :class="{'bg-gray-300': isSelected('injuries','back'), 'bg-gray-100': !isSelected('injuries','back')}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Rug</button>
-                <button x-on:click="toggleInArray('injuries','shoulder')"
-                        :class="{'bg-gray-300': isSelected('injuries','shoulder'), 'bg-gray-100': !isSelected('injuries','shoulder')}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Schouder</button>
-                <button x-on:click="toggleInArray('injuries','none')"
-                        :class="{'bg-gray-300': isSelected('injuries','none'), 'bg-gray-100': !isSelected('injuries','none')}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Geen</button>
-                <button x-on:click="toggleInArray('injuries','other')"
-                        :class="{'bg-gray-300': isSelected('injuries','other'), 'bg-gray-100': !isSelected('injuries','other')}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Anders</button>
-            </div>
-            <div class="flex items-center gap-2 mt-4">
-                <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.76559 13.3656C7.61557 13.5156 7.41212 13.5998 7.19999 13.5998C6.98786 13.5998 6.78441 13.5156 6.63439 13.3656L1.83439 8.56562C1.68441 8.4156 1.60016 8.21215 1.60016 8.00002C1.60016 7.78789 1.68441 7.58444 1.83439 7.43442L6.63439 2.63442C6.78527 2.48869 6.98735 2.40806 7.19711 2.40988C7.40687 2.4117 7.60752 2.49584 7.75584 2.64417C7.90417 2.79249 7.9883 2.99314 7.99013 3.2029C7.99195 3.41266 7.91131 3.61474 7.76559 3.76562L4.33119 7.20002H13.6C13.8122 7.20002 14.0156 7.28431 14.1657 7.43434C14.3157 7.58436 14.4 7.78785 14.4 8.00002C14.4 8.21219 14.3157 8.41568 14.1657 8.56571C14.0156 8.71574 13.8122 8.80002 13.6 8.80002H4.33119L7.76559 12.2344C7.91556 12.3844 7.99982 12.5879 7.99982 12.8C7.99982 13.0122 7.91556 13.2156 7.76559 13.3656V13.3656Z" fill="white"/>
-                    </svg>
-                </button>
-                <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
-            </div>
-            </div>
-
-            <!-- 10: Voeding -->
-            <div x-show="doneTyping && current === 10" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
-            <div class="grid grid-cols-2 gap-2">
-                <p class="text-xs col-span-2 font-medium text-[var(--text-color)]">Wil je voedingsrichtlijnen?</p>
-                <button x-on:click="form.nutrition_enabled='yes'; saveLocal()"
-                        :class="{'bg-gray-300': form.nutrition_enabled==='yes', 'bg-gray-100': form.nutrition_enabled!=='yes'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Ja graag</button>
-                <button x-on:click="form.nutrition_enabled='no'; form.nutrition_rate_pct=''; saveLocal()"
-                        :class="{'bg-gray-300': form.nutrition_enabled==='no', 'bg-gray-100': form.nutrition_enabled!=='no'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Nee, sla over</button>
-            </div>
-            <div x-show="form.nutrition_enabled==='yes'" class="space-y-4">
-                <div class="grid grid-cols-5 gap-2">
-                <p class="text-xs col-span-5 font-medium text-[var(--text-color)]">Hoe wil je je calorie-inname aanpassen?</p>
-                <button x-on:click="form.nutrition_rate_pct='-20'; saveLocal()"
-                        :class="{'bg-gray-300': form.nutrition_rate_pct==='-20', 'bg-gray-100': form.nutrition_rate_pct!=='-20'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">-20%</button>
-                <button x-on:click="form.nutrition_rate_pct='-15'; saveLocal()"
-                        :class="{'bg-gray-300': form.nutrition_rate_pct==='-15', 'bg-gray-100': form.nutrition_rate_pct!=='-15'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">-15%</button>
-                <button x-on:click="form.nutrition_rate_pct='-10'; saveLocal()"
-                        :class="{'bg-gray-300': form.nutrition_rate_pct==='-10', 'bg-gray-100': form.nutrition_rate_pct!=='-10'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">-10%</button>
-                <button x-on:click="form.nutrition_rate_pct='+5'; saveLocal()"
-                        :class="{'bg-gray-300': form.nutrition_rate_pct==='+5', 'bg-gray-100': form.nutrition_rate_pct!=='+5'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">+5%</button>
-                <button x-on:click="form.nutrition_rate_pct='+10'; saveLocal()"
-                        :class="{'bg-gray-300': form.nutrition_rate_pct==='+10', 'bg-gray-100': form.nutrition_rate_pct!=='+10'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">+10%</button>
+            <div class="text-[var(--text-color)]">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-6 h-6 bg-[#215558]/10 rounded-full overflow-hidden">
+                        <img src="{{ asset('assets/trainer.jpg') }}" width="64" height="64" loading="lazy" alt="Coach">
+                    </div>
+                    <h4 class="leading-tight text-sm font-semibold text-[#343434]">Coach Nicky & Eline</h4>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                <p class="text-xs col-span-5 font-medium text-[var(--text-color)]">Wat is je dieet voorkeur?</p>
-                <button x-on:click="form.diet_pref='none'; form.diet_pref_text=''; saveLocal()"
-                        :class="{'bg-gray-300': form.diet_pref==='none', 'bg-gray-100': form.diet_pref!=='none'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Geen</button>
-                <button x-on:click="form.diet_pref='vegetarian'; saveLocal()"
-                        :class="{'bg-gray-300': form.diet_pref==='vegetarian', 'bg-gray-100': form.diet_pref!=='vegetarian'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Vegetarisch</button>
-                <button x-on:click="form.diet_pref='halal'; saveLocal()"
-                        :class="{'bg-gray-300': form.diet_pref==='halal', 'bg-gray-100': form.diet_pref!=='halal'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Halal</button>
-                <button x-on:click="form.diet_pref='allergy'; saveLocal()"
-                        :class="{'bg-gray-300': form.diet_pref==='allergy', 'bg-gray-100': form.diet_pref!=='allergy'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Allergie</button>
-                <button x-on:click="form.diet_pref='other'; saveLocal()"
-                        :class="{'bg-gray-300': form.diet_pref==='other', 'bg-gray-100': form.diet_pref!=='other'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Anders</button>
+
+                <!-- Typewriter -->
+                <p class="text-sm text-[var(--text-color)] min-h-[20px] mb-4" x-html="typed"></p>
+
+                <!-- 0: Start -->
+                <div x-show="doneTyping && current === 0" x-transition class="pt-3">
+                    <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center whitespace-nowrap">
+                        Start mijn intake
+                    </button>
                 </div>
-                <input x-show="['allergy','other'].includes(form.diet_pref)" type="text"
-                    placeholder="Licht toe (bijv. notenallergie, geen vis)"
-                    x-model="form.diet_pref_text"
-                    class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
-            </div>
-            <div class="flex items-center gap-2"
-                :class="form.nutrition_enabled === 'yes' ? '' : 'mt-4'">
-            <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M7.76559 13.3656C7.61557 13.5156 7.41212 13.5998 7.19999 13.5998C6.98786 13.5998 6.78441 13.5156 6.63439 13.3656L1.83439 8.56562C1.68441 8.4156 1.60016 8.21215 1.60016 8.00002C1.60016 7.78789 1.68441 7.58444 1.83439 7.43442L6.63439 2.63442C6.78527 2.48869 6.98735 2.40806 7.19711 2.40988C7.40687 2.4117 7.60752 2.49584 7.75584 2.64417C7.90417 2.79249 7.9883 2.99314 7.99013 3.2029C7.99195 3.41266 7.91131 3.61474 7.76559 3.76562L4.33119 7.20002H13.6C13.8122 7.20002 14.0156 7.28431 14.1657 7.43434C14.3157 7.58436 14.4 7.78785 14.4 8.00002C14.4 8.21219 14.3157 8.41568 14.1657 8.56571C14.0156 8.71574 13.8122 8.80002 13.6 8.80002H4.33119L7.76559 12.2344C7.91556 12.3844 7.99982 12.5879 7.99982 12.8C7.99982 13.0122 7.91556 13.2156 7.76559 13.3656V13.3656Z" fill="white"/>
-                </svg>
-            </button>
-            <button x-on:click.prevent="next()"
-                    class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">
-                Volgende
-            </button>
-            </div>
-            </div>
 
-            <!-- 11: Notificaties -->
-            <div x-show="doneTyping && current === 11" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
-            <div class="grid grid-cols-4 gap-2">
-                <p class="text-xs col-span-4 font-medium text-[var(--text-color)]">Hoe wil je notificaties ontvangen?</p>
-                <button x-on:click="form.notify_channel='push'; saveLocal()"
-                        :class="{'bg-gray-300': form.notify_channel==='push', 'bg-gray-100': form.notify_channel!=='push'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Push</button>
-                <button x-on:click="form.notify_channel='email'; saveLocal()"
-                        :class="{'bg-gray-300': form.notify_channel==='email', 'bg-gray-100': form.notify_channel!=='email'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">E-mail</button>
-                <button x-on:click="form.notify_channel='whatsapp'; saveLocal()"
-                        :class="{'bg-gray-300': form.notify_channel==='whatsapp', 'bg-gray-100': form.notify_channel!=='whatsapp'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">WhatsApp</button>
-                <button x-on:click="form.notify_channel='none'; saveLocal()"
-                        :class="{'bg-gray-300': form.notify_channel==='none', 'bg-gray-100': form.notify_channel!=='none'}"
-                        class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Geen</button>
-            </div>
-            <div class="flex items-center gap-2 mt-4">
-                <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.76559 13.3656C7.61557 13.5156 7.41212 13.5998 7.19999 13.5998C6.98786 13.5998 6.78441 13.5156 6.63439 13.3656L1.83439 8.56562C1.68441 8.4156 1.60016 8.21215 1.60016 8.00002C1.60016 7.78789 1.68441 7.58444 1.83439 7.43442L6.63439 2.63442C6.78527 2.48869 6.98735 2.40806 7.19711 2.40988C7.40687 2.4117 7.60752 2.49584 7.75584 2.64417C7.90417 2.79249 7.9883 2.99314 7.99013 3.2029C7.99195 3.41266 7.91131 3.61474 7.76559 3.76562L4.33119 7.20002H13.6C13.8122 7.20002 14.0156 7.28431 14.1657 7.43434C14.3157 7.58436 14.4 7.78785 14.4 8.00002C14.4 8.21219 14.3157 8.41568 14.1657 8.56571C14.0156 8.71574 13.8122 8.80002 13.6 8.80002H4.33119L7.76559 12.2344C7.91556 12.3844 7.99982 12.5879 7.99982 12.8C7.99982 13.0122 7.91556 13.2156 7.76559 13.3656V13.3656Z" fill="white"/>
-                    </svg>
-                </button>
-                <button x-on:click.prevent="submitForm()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
-            </div>
-            </div>
+                <!-- 1: Naam -->
+                <div x-show="doneTyping && current === 1" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Naam</p>
+                    <input type="text" placeholder="Voor- en achternaam"
+                        x-model="form.name"
+                        class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
+                    </div>
+                </div>
 
-            <!-- 12: Bedankt -->
-            <div x-show="doneTyping && current === 12" x-transition class="relative">
-            <div class="mt-6 -mb-2">
-                <p class="text-[#343434]/50 text-xs font-semibold">
-                Gif, of intro video van Roy
-                </p>
-            </div>
-            </div>
+                <!-- 2: Geboortedatum -->
+                <div x-show="doneTyping && current === 2" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Geboortedatum</p>
+                    <input type="date" x-model="form.birth_date"
+                        class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                        <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
+                    </div>
+                </div>
 
-        </div>
+                <!-- 3: Adres -->
+                <div x-show="doneTyping && current === 3" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Adres</p>
+                    <input type="text" placeholder="Straat, huisnummer, plaats"
+                        x-model="form.address"
+                        class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                        <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
+                    </div>
+                </div>
+
+                <!-- 4: Geslacht -->
+                <div x-show="doneTyping && current === 4" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Geslacht</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button x-on:click="form.gender='man'; saveLocal(); next()"
+                                :class="{'bg-gray-300': form.gender==='man', 'bg-gray-100': form.gender!=='man'}"
+                                class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Man</button>
+                        <button x-on:click="form.gender='vrouw'; saveLocal(); next()"
+                                :class="{'bg-gray-300': form.gender==='vrouw', 'bg-gray-100': form.gender!=='vrouw'}"
+                                class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Vrouw</button>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                    </div>
+                </div>
+
+                <!-- 5: Lengte -->
+                <div x-show="doneTyping && current === 5" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Lengte (cm)</p>
+                    <input type="number" min="140" max="220" placeholder="Lengte in centimeters"
+                        x-model="form.height_cm"
+                        class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                        <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
+                    </div>
+                </div>
+
+                <!-- 6: Gewicht -->
+                <div x-show="doneTyping && current === 6" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Gewicht (kg)</p>
+                    <input type="number" step="0.1" min="40" max="200" placeholder="Huidige gewicht"
+                        x-model="form.weight_kg"
+                        class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                        <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
+                    </div>
+                </div>
+
+                <!-- 7: Blessures -->
+                <div x-show="doneTyping && current === 7" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Blessures of beperkingen</p>
+                    <p class="text-xs text-gray-500">T.b.v. trainingen kunnen volgen</p>
+                    <textarea placeholder="Beschrijf eventuele blessures, klachten of fysieke beperkingen..."
+                            x-model="form.injuries"
+                            rows="3"
+                            class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)] resize-vertical"></textarea>
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                        <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
+                    </div>
+                </div>
+
+                <!-- 8: Trainingsdoel -->
+                <div x-show="doneTyping && current === 8" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Trainingsdoel</p>
+                    <textarea placeholder="Beschrijf je trainingsdoel (bijv. HYROX wedstrijd, 5km onder 25 min, etc.)"
+                            x-model="form.training_goal"
+                            rows="3"
+                            class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)] resize-vertical"></textarea>
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                        <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
+                    </div>
+                </div>
+
+                <!-- 9: Trainingsperiode -->
+                <div x-show="doneTyping && current === 9" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Trainingsperiode om het trainingsdoel te bereiken</p>
+                    <input type="text" placeholder="Bijv. 12 weken, 6 maanden, tot maart 2025"
+                        x-model="form.training_period"
+                        class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
+                    
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Wanneer wil je starten?</p>
+                    <input type="date" x-model="form.start_date"
+                        class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                        <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
+                    </div>
+                </div>
+
+                <!-- 10: Trainingsfrequentie -->
+                <div x-show="doneTyping && current === 10" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Hoe veel trainingen per week?</p>
+                    <div class="grid grid-cols-5 gap-2">
+                        <template x-for="days in [2,3,4,5,6]" :key="days">
+                            <button x-on:click="form.trainings_per_week=days; saveLocal()"
+                                    :class="{'bg-gray-300': form.trainings_per_week===days, 'bg-gray-100': form.trainings_per_week!==days}"
+                                    class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer" x-text="days + 'x'"></button>
+                        </template>
+                    </div>
+                    
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Eventueel meerdere op 1 dag?</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button x-on:click="form.multiple_per_day='ja'; saveLocal()"
+                                :class="{'bg-gray-300': form.multiple_per_day==='ja', 'bg-gray-100': form.multiple_per_day!=='ja'}"
+                                class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Ja</button>
+                        <button x-on:click="form.multiple_per_day='nee'; form.multiple_when=''; saveLocal()"
+                                :class="{'bg-gray-300': form.multiple_per_day==='nee', 'bg-gray-100': form.multiple_per_day!=='nee'}"
+                                class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Nee</button>
+                    </div>
+                    
+                    <div x-show="form.multiple_per_day==='ja'">
+                        <p class="text-xs font-medium text-[var(--text-color)] mb-2">Zo ja, wanneer?</p>
+                        <input type="text" placeholder="Bijv. zaterdag ochtend en middag"
+                            x-model="form.multiple_when"
+                            class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
+                    </div>
+                    
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Duur van een training</p>
+                    <div class="grid grid-cols-4 gap-2">
+                        <template x-for="minutes in [45,60,75,90]" :key="minutes">
+                            <button x-on:click="form.session_duration=minutes; saveLocal()"
+                                    :class="{'bg-gray-300': form.session_duration===minutes, 'bg-gray-100': form.session_duration!==minutes}"
+                                    class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer" x-text="minutes + ' min'"></button>
+                        </template>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                        <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
+                    </div>
+                </div>
+
+                <!-- 11: Trainingsachtergrond -->
+                <div x-show="doneTyping && current === 11" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Wat is je trainingsachtergrond?</p>
+                    <p class="text-xs text-gray-500">Welke sporten heb je beoefend of beoefen je nog steeds?</p>
+                    <textarea placeholder="Beschrijf je sportachtergrond"
+                            x-model="form.training_background"
+                            rows="3"
+                            class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)] resize-vertical"></textarea>
+                    
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Hoe vaak train je nu per week?</p>
+                    <input type="text" placeholder="Trainingsgeschiedenis"
+                        x-model="form.current_frequency"
+                        class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
+                    
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Wat doe je nu per week?</p>
+                    <textarea placeholder="Beschrijf je huidige trainingsactiviteiten"
+                            x-model="form.current_activities"
+                            rows="2"
+                            class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)] resize-vertical"></textarea>
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                        <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
+                    </div>
+                </div>
+
+                <!-- 12: Trainingsfaciliteiten -->
+                <div x-show="doneTyping && current === 12" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Wat zijn je trainingsfaciliteiten?</p>
+                    <p class="text-xs text-gray-500">Waar train je?</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button x-on:click="form.training_location='thuis'; saveLocal()"
+                                :class="{'bg-gray-300': form.training_location==='thuis', 'bg-gray-100': form.training_location!=='thuis'}"
+                                class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Thuis</button>
+                        <button x-on:click="form.training_location='sportschool'; saveLocal()"
+                                :class="{'bg-gray-300': form.training_location==='sportschool', 'bg-gray-100': form.training_location!=='sportschool'}"
+                                class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Sportschool</button>
+                        <button x-on:click="form.training_location='buiten'; saveLocal()"
+                                :class="{'bg-gray-300': form.training_location==='buiten', 'bg-gray-100': form.training_location!=='buiten'}"
+                                class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Buiten</button>
+                        <button x-on:click="form.training_location='combinatie'; saveLocal()"
+                                :class="{'bg-gray-300': form.training_location==='combinatie', 'bg-gray-100': form.training_location!=='combinatie'}"
+                                class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Combinatie</button>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                        <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
+                    </div>
+                </div>
+
+                <!-- 13: Materialen -->
+                <div x-show="doneTyping && current === 13" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Welke materialen heb je tot je beschikking?</p>
+                    <textarea placeholder="Beschrijf welke apparatuur/materialen je hebt"
+                            x-model="form.equipment"
+                            rows="3"
+                            class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)] resize-vertical"></textarea>
+                    
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">HYROX specifieke materialen?</p>
+                    <textarea placeholder="Bijv. sled, sandbag, farmers handles, wall balls, etc."
+                            x-model="form.hyrox_equipment"
+                            rows="2"
+                            class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)] resize-vertical"></textarea>
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                        <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
+                    </div>
+                </div>
+
+                <!-- 14: Overige zaken -->
+                <div x-show="doneTyping && current === 14" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Overige zaken om rekening mee te houden</p>
+                    <textarea placeholder="Andere belangrijke zaken voor je trainingsplan (werk, gezin, voorkeur oefeningen, etc.)"
+                            x-model="form.additional_notes"
+                            rows="4"
+                            class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)] resize-vertical"></textarea>
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                        <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
+                    </div>
+                </div>
+
+                <!-- 15: Hartslag -->
+                <div x-show="doneTyping && current === 15" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Maximale hartfrequentie <span class="text-gray-500">(optioneel)</span></p>
+                    <input type="number" min="150" max="220" placeholder="Max HF"
+                        x-model="form.max_hr"
+                        class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
+                    
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Rusthartslag <span class="text-gray-500">(optioneel)</span></p>
+                    <input type="number" min="40" max="100" placeholder="Rust HF"
+                        x-model="form.rest_hr"
+                        class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
+                    
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">Hartslag zones <span class="text-gray-500">(alleen bij officiële meting)</span></p>
+                    <div class="grid grid-cols-5 gap-1">
+                        <input type="number" placeholder="Zone 1" x-model="form.zone1" class="outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2 rounded-[var(--border-radius)] text-xs bg-white text-[var(--text-color)]">
+                        <input type="number" placeholder="Zone 2" x-model="form.zone2" class="outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2 rounded-[var(--border-radius)] text-xs bg-white text-[var(--text-color)]">
+                        <input type="number" placeholder="Zone 3" x-model="form.zone3" class="outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2 rounded-[var(--border-radius)] text-xs bg-white text-[var(--text-color)]">
+                        <input type="number" placeholder="Zone 4" x-model="form.zone4" class="outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2 rounded-[var(--border-radius)] text-xs bg-white text-[var(--text-color)]">
+                        <input type="number" placeholder="Zone 5" x-model="form.zone5" class="outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2 rounded-[var(--border-radius)] text-xs bg-white text-[var(--text-color)]">
+                    </div>
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                        <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
+                    </div>
+                </div>
+
+                <!-- 16: 12 minuten loop -->
+                <div x-show="doneTyping && current === 16" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">12 minuten loop (maximaal test)</p>
+                    <p class="text-xs text-gray-500">T.b.v. loop tijden en programma</p>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <button x-on:click="form.cooper_done='ja'; saveLocal()"
+                                :class="{'bg-gray-300': form.cooper_done==='ja', 'bg-gray-100': form.cooper_done!=='ja'}"
+                                class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Gedaan</button>
+                        <button x-on:click="form.cooper_done='nee'; form.cooper_result=''; saveLocal()"
+                                :class="{'bg-gray-300': form.cooper_done==='nee', 'bg-gray-100': form.cooper_done!=='nee'}"
+                                class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Nog niet</button>
+                    </div>
+                    
+                    <div x-show="form.cooper_done==='ja'">
+                        <p class="text-xs font-medium text-[var(--text-color)] mb-2">Resultaat (meters)</p>
+                        <input type="number" min="1" max="10000" placeholder="Afstand in meters"
+                            x-model="form.cooper_result"
+                            class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
+                    </div>
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                        <button x-on:click.prevent="next()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Volgende</button>
+                    </div>
+                </div>
+
+                <!-- 17: 5km loop -->
+                <div x-show="doneTyping && current === 17" x-transition class="mt-6 -mb-2 flex flex-col gap-4">
+                    <p class="text-xs font-medium text-[var(--text-color)] -mb-2">5km loop (maximaal test)</p>
+                    <p class="text-xs text-gray-500">T.b.v. loop tijden en programma</p>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <button x-on:click="form.fivek_done='ja'; saveLocal()"
+                                :class="{'bg-gray-300': form.fivek_done==='ja', 'bg-gray-100': form.fivek_done!=='ja'}"
+                                class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Gedaan</button>
+                        <button x-on:click="form.fivek_done='nee'; form.fivek_result=''; saveLocal()"
+                                :class="{'bg-gray-300': form.fivek_done==='nee', 'bg-gray-100': form.fivek_done!=='nee'}"
+                                class="rounded-[var(--border-radius)] p-2.5 text-sm font-medium transition duration-300 cursor-pointer">Nog niet</button>
+                    </div>
+                    
+                    <div x-show="form.fivek_done==='ja'">
+                        <p class="text-xs font-medium text-[var(--text-color)] mb-2">Resultaat (mm:ss)</p>
+                        <input type="text" placeholder="Bijv. 25:30"
+                            x-model="form.fivek_result"
+                            class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]">
+                    </div>
+                    
+                    <div class="flex items-center gap-2 mt-4">
+                        <button x-on:click.prevent="prev()" class="bg-[#d8d8d8] min-w-[40px] min-h-[40px] text-white rounded-[var(--border-radius)] flex items-center justify-center">←</button>
+                        <button x-on:click.prevent="submitForm()" class="font-semibold text-white text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-full">Verstuur intake</button>
+                    </div>
+                </div>
+
+                <!-- 18: Bedankt -->
+                <div x-show="doneTyping && current === 18" x-transition class="relative">
+                    <div class="mt-6 -mb-2">
+                        <p class="text-[#343434] text-sm mb-4">
+                            <strong>Bedankt!</strong> Je intake is verstuurd. Nicky & Eline gaan nu aan de slag met jouw persoonlijke trainingsplan.
+                        </p>
+                        <p class="text-[#343434]/70 text-xs">
+                            Je ontvangt binnenkort je HYROX trainingsschema inclusief persoonlijke looptijden.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
         </div>
         <script>
-        window.TRAINER_TEXTS = [
-        '<strong>Top dat je gestart bent!</strong> In een paar korte stappen zet je jouw persoonlijke plan en dashboard klaar.',
-        'Zou je me kunnen vertellen wat je hoofddoel is?',
-        'Helder! Kun je je doel iets concreter maken, bijvoorbeeld je streefgewicht of een specifieke fit-doelstelling?',
-        'En tegen wanneer zou je dit ongeveer willen bereiken?',
-        'Mooi, dank je! Laten we nu wat persoonlijke profielgegevens invullen.',
-        'Kun je me vertellen hoe actief je bent in het dagelijks leven en welk trainingsniveau je hebt?',
-        'Waar train je meestal, en welke materialen heb je tot je beschikking?',
-        'Hoe ziet je ideale trainingsschema eruit, qua aantal dagen en duur van de sessies?',
-        'Goed! We vullen ook een beginwaarde in voor je bench press (optioneel).',
-        'Zijn er blessures of klachten waar we rekening mee moeten houden?',
-        'Wil je dat ik ook voedingsrichtlijnen voor je bereken, zodat je weet hoeveel je ongeveer nodig hebt?',
-        'Tot slot, wil je herinneringen ontvangen zodat je makkelijker op schema blijft?',
-        'Yes! Alles staat erin. Je dashboard is gevuld en je kunt direct aan de slag.'
-        ];
+            window.TRAINER_TEXTS = [
+                '<strong>Hey daar, welkom!</strong> Super dat je ervoor gekozen hebt om met ons te gaan trainen. Ik ben heel benieuwd naar jouw verhaal en wat je wilt bereiken. Laten we er samen voor zorgen dat we het beste trainingsplan voor jou maken!',
+                
+                'Oké, laten we beginnen met het belangrijkste - hoe mag ik je noemen?',
+                
+                'Dank je! En wanneer ben je geboren? Ik heb je geboortedatum nodig om je trainingsplan goed af te stemmen op jouw leeftijd.',
+                
+                'Perfect. Waar woon je? Dit helpt me om eventueel lokale trainingsmogelijkheden in gedachten te houden.',
+                
+                'Goed, en ben je een man of vrouw? Dit maakt verschil voor de trainingsrichtlijnen die ik ga opstellen.',
+                
+                'Oké! Nu wil ik graag weten hoe lang je bent. Elke centimeter telt voor de juiste berekeningen.',
+                
+                'En wat is je huidige gewicht? Geen zorgen, dit blijft tussen ons - het helpt me alleen om je startpunt goed in te schatten.',
+                
+                'Nu iets belangrijks: zijn er blessures, pijntjes of fysieke beperkingen waar ik absoluut rekening mee moet houden? Ik wil voorkomen dat we iets doen wat niet goed voor je is.',
+                
+                'Vertel me eens, wat wil je precies bereiken? Een HYROX wedstrijd? Sneller hardlopen? Gewoon fitter worden? Ik hoor het graag - hoe specifieker, hoe beter!',
+                
+                'Vet, dat klinkt als een mooi doel! Hoe lang denk je erover te doen om dit te bereiken? En wanneer wil je het liefst beginnen met trainen?',
+                
+                'Nu even praktisch: hoe vaak per week zie je jezelf trainen? En hoe lang zou een training mogen duren? Eerlijkheid werkt het beste hier - ik stel het plan af op wat realistisch is voor jouw leven.',
+                
+                'Vertel me eens over je sportachtergrond. Welke sporten heb je gedaan? Train je al, en zo ja, wat doe je nu zoal? Elk detail helpt me om je niveau in te schatten.',
+                
+                'Waar ga je meestal trainen? Thuis, in een sportschool, of buiten? Ik pas het programma aan op wat voor jou beschikbaar is.',
+                
+                'En wat heb je zoal aan spullen? Heb je halters, kettlebells, een roeimachine? Bij HYROX hebben we soms specifieke materialen nodig, dus vertel me wat je hebt!',
+                
+                'Zijn er nog andere dingen die belangrijk zijn om te weten? Denk aan werk, gezin, reistijd, of gewoon dingen waar je een hekel aan hebt in training. Alles wat impact heeft op je schema.',
+                
+                'Heb je toevallig hartslag data? Je maximale hartslag, rusthartslag, of hartslag zones? Helemaal niet erg als je dit niet weet - het is bonus informatie.',
+                
+                'Heb je wel eens een Cooper test gedaan? Dat is 12 minuten zo hard mogelijk rennen. Als je het hebt gedaan, hoever kwam je? Dit helpt enorm voor je looptijden.',
+                
+                'En een 5 kilometer maximaal? Als je dit ooit hebt gelopen, wat was je tijd? Ook dit geeft me waardevolle info voor je trainingssnelheden.',
+                
+                '<strong>Wauw, wat een uitgebreide intake!</strong> Ik heb nu alle info die ik nodig heb. Nicky en Eline gaan nu direct aan de slag met jouw persoonlijke HYROX plan. Je hoort snel van ons!'
+            ];
 
-        // Alpine store
-        function trainerOnboarding({ texts }) {
-            return {
-            // Typewriter
-            texts, current: 0, fullText: "", typed: "", speed: 18, doneTyping: false,
+            function trainerOnboarding({ texts }) {
+                return {
+                    // Typewriter
+                    texts, 
+                    current: 0, 
+                    fullText: "", 
+                    typed: "", 
+                    speed: 18, 
+                    doneTyping: false,
 
-            // Weekdagen labels
-            weekdaysMap: [
-                { key: 'mon', label: 'Ma' }, { key: 'tue', label: 'Di' }, { key: 'wed', label: 'Wo' },
-                { key: 'thu', label: 'Do' }, { key: 'fri', label: 'Vr' }, { key: 'sat', label: 'Za' },
-                { key: 'sun', label: 'Zo' },
-            ],
+                    // Form data
+                    form: {
+                        name: '',
+                        birth_date: '',
+                        address: '',
+                        gender: '',
+                        height_cm: '',
+                        weight_kg: '',
+                        injuries: '',
+                        training_goal: '',
+                        training_period: '',
+                        start_date: '',
+                        trainings_per_week: '',
+                        multiple_per_day: '',
+                        multiple_when: '',
+                        session_duration: '',
+                        training_background: '',
+                        current_frequency: '',
+                        current_activities: '',
+                        training_location: '',
+                        equipment: '',
+                        hyrox_equipment: '',
+                        additional_notes: '',
+                        max_hr: '',
+                        rest_hr: '',
+                        zone1: '',
+                        zone2: '',
+                        zone3: '',
+                        zone4: '',
+                        zone5: '',
+                        cooper_done: '',
+                        cooper_result: '',
+                        fivek_done: '',
+                        fivek_result: ''
+                    },
 
-            // Payload richting backend
-            form: {
-                goal_type: '',                 // cut | bulk | fit
-                target_weight_kg: '',          // number (bij cut/bulk)
-                fit_goal_text: '',             // string (bij fit)
-                target_date: '',               // yyyy-mm-dd
+                    // Lifecycle
+                    start() {
+                        this.loadLocal();
+                        if (!this.texts[this.current]) return;
+                        this.fullText = this.texts[this.current];
+                        this.typed = ""; 
+                        this.doneTyping = false;
+                        let i = 0;
+                        let timer = setInterval(() => {
+                            this.typed += this.fullText[i] ?? "";
+                            i++;
+                            if (i >= this.fullText.length) {
+                                clearInterval(timer);
+                                setTimeout(() => { this.doneTyping = true; }, 180);
+                            }
+                        }, this.speed);
+                    },
 
-                current_weight_kg: '',         // number
-                height_cm: '',                 // number
-                birth_year: '',                // number
-                sex: '',                       // female | male | unspecified
-                activity_level: '',            // sedentary | light | moderate | very
-                experience_level: '',          // beginner | intermediate | advanced
+                    next() { 
+                        if (this.current < this.texts.length - 1) { 
+                            this.current++; 
+                            this.saveLocal(); 
+                            this.start(); 
+                        } 
+                    },
 
-                train_location: '',            // home | gym
-                equipment: [],                 // ['mat','dumbbells','bands','none']
+                    prev() { 
+                        if (this.current > 0) { 
+                            this.current--; 
+                            this.saveLocal(); 
+                            this.start(); 
+                        } 
+                    },
 
-                days_per_week: '',             // 2|3|4|5
-                session_minutes: '',           // 20|30|45|60
-                weekdays: [],                  // ['mon','wed',...]
+                    // Helpers
+                    saveLocal() { 
+                        localStorage.setItem('hyrox_intake', JSON.stringify({ 
+                            form: this.form, 
+                            current: this.current 
+                        })); 
+                    },
 
-                bench_mode: '',                // 1rm | 5reps | 10reps | unknown
-                bench_weight_kg: '',           // number when mode != unknown
+                    loadLocal() {
+                        try {
+                            const raw = localStorage.getItem('hyrox_intake');
+                            if (!raw) return; 
+                            const s = JSON.parse(raw);
+                            if (s?.form) this.form = { ...this.form, ...s.form };
+                            if (Number.isInteger(s?.current)) this.current = s.current;
+                        } catch {}
+                    },
 
-                injuries: [],                  // ['knee','back','shoulder','none','other']
+                    submitForm() {
+                        // Basic validation
+                        const required = [
+                            this.form.name,
+                            this.form.birth_date,
+                            this.form.gender,
+                            this.form.height_cm,
+                            this.form.weight_kg,
+                            this.form.training_goal,
+                            this.form.trainings_per_week
+                        ];
 
-                nutrition_enabled: '',         // yes | no
-                nutrition_rate_pct: '',        // "-10" | "-15" | "-20" | "+5" | "+10"
-                diet_pref: '',                 // none | vegetarian | halal | allergy | other
-                diet_pref_text: '',
+                        if (required.some(v => !v || (typeof v === 'string' && !v.toString().trim()))) {
+                            alert('Vul alle verplichte velden in.');
+                            return;
+                        }
 
-                notify_channel: '',            // push | email | whatsapp | none
-            },
-
-            // Lifecycle
-            start() {
-                this.loadLocal();
-                if (!this.texts[this.current]) return;
-                this.fullText = this.texts[this.current];
-                this.typed = ""; this.doneTyping = false;
-                let i = 0;
-                let timer = setInterval(() => {
-                this.typed += this.fullText[i] ?? "";
-                i++;
-                if (i >= this.fullText.length) {
-                    clearInterval(timer);
-                    setTimeout(() => { this.doneTyping = true; }, 180);
+                        fetch('/onboarding/hyrox-intake', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify(this.form)
+                        })
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data?.success) {
+                                localStorage.removeItem('hyrox_intake');
+                                if (data?.redirect) return window.location = data.redirect;
+                                this.current = this.texts.length - 1; 
+                                this.start();
+                            } else { 
+                                alert('Opslaan mislukt. Probeer het nogmaals.'); 
+                            }
+                        })
+                        .catch(() => alert('Netwerkfout. Probeer het nogmaals.'));
+                    }
                 }
-                }, this.speed);
-            },
-            next() { if (this.current < this.texts.length - 1) { this.current++; this.saveLocal(); this.start(); } },
-            prev() { if (this.current > 0) { this.current--; this.saveLocal(); this.start(); } },
-
-            // Helpers
-            setAndNext(key, val) { this.form[key] = val; this.saveLocal(); this.next(); },
-            toggleInArray(key, val) {
-                const s = new Set(this.form[key]); s.has(val) ? s.delete(val) : s.add(val);
-                this.form[key] = Array.from(s); this.saveLocal();
-            },
-            isSelected(key, val) { return Array.isArray(this.form[key]) ? this.form[key].includes(val) : this.form[key] === val; },
-            saveLocal() { localStorage.setItem('trainer_onboarding', JSON.stringify({ form: this.form, current: this.current })); },
-            loadLocal() {
-                try {
-                const raw = localStorage.getItem('trainer_onboarding');
-                if (!raw) return; const s = JSON.parse(raw);
-                if (s?.form) this.form = { ...this.form, ...s.form };
-                if (Number.isInteger(s?.current)) this.current = s.current;
-                } catch {}
-            },
-
-            submitForm() {
-                const required = [
-                this.form.goal_type, this.form.current_weight_kg, this.form.height_cm,
-                this.form.activity_level, this.form.days_per_week, this.form.session_minutes
-                ];
-                if (required.some(v => !v || (typeof v === 'string' && !v.toString().trim()))) {
-                alert('Check of je alle verplichte velden hebt ingevuld.');
-                return;
-                }
-                fetch('/onboarding/fitness', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify(this.form)
-                })
-                .then(r => r.json())
-                .then(data => {
-                if (data?.success) {
-                    localStorage.removeItem('trainer_onboarding');
-                    if (data?.redirect) return window.location = data.redirect;
-                    this.current = this.texts.length - 1; this.start();
-                } else { alert('Opslaan mislukt. Probeer het nogmaals.'); }
-                })
-                .catch(() => alert('Netwerkfout. Probeer het nogmaals.'));
             }
-            }
-        }
         </script>
     </body>
 </html>

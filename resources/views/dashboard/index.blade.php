@@ -48,16 +48,8 @@
                 class="fixed inset-0 z-[9999] flex items-center justify-center modal-backdrop">
                 <div class="modal bg-white rounded-lg p-6 mx-4">
                     <h2 class="leading-tight text-sm font-semibold text-[var(--text-color)] mb-4">Stel je account in</h2>
-                    <p class="text-sm text-[var(--text-color)] mb-6">Om je voortgang te behouden, stel je account definitief in met een e-mailadres en wachtwoord.</p>
+                    <p class="text-sm text-[var(--text-color)] mb-6">Om je voortgang te behouden, voeg een e-mailadres en wachtwoord toe.</p>
                     <form @submit.prevent="submitForm">
-                        <div class="mb-4 flex flex-col gap-2">
-                            <label class="text-xs font-medium text-[var(--text-color)]">Naam</label>
-                            <input type="text" 
-                                x-model="form.name" 
-                                class="w-full outline-none border border-[#d1d1d1] focus:border-[var(--primary-color)] transition duration-300 p-2.5 rounded-[var(--border-radius)] text-sm bg-white text-[var(--text-color)]" 
-                                placeholder="Je volledige naam"
-                                required>
-                        </div>
                         <div class="mb-4 flex flex-col gap-2">
                             <label class="text-xs font-medium text-[var(--text-color)]">E-mailadres</label>
                             <input type="email" 
@@ -137,150 +129,169 @@
                     </form>
                 </div>
                 <div class="max-w-[1200px] py-[5rem] px-[1.5rem] mx-auto h-full flex flex-col gap-8">
-                    <h1 class="text-[var(--text-color)] text-3xl font-bold tracking-tighter">Welkom terug <br class="block md:hidden">{{ $user->name }}!</h1>
-                    <div class="w-full min-h-[400px] relative overflow-hidden rounded-[var(--border-radius)]">
-                        <div class="w-full h-full absolute z-[2] bg-black/10 flex flex-col items-center justify-center">
-                            <h3 class="uppercase tracking-[0.4em] text-white font-semibold text-xs mb-4 text-center">Passie voor fitness en een gezonde leefstijl</h3>
-                            <h2 class="text-[40px] text-white tracking-tighter font-bold leading-tight text-center mb-8">Supplementen voor sporters<br>van de hoogste kwaliteit</h2>
-                            <a href="#" class="font-semibold text-white text-sm bg-[var(--text-color)] hover:bg-[var(--text-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-fit">Bekijk onze producten</a>
+                    <h1 class="text-[var(--text-color)] text-3xl font-bold tracking-tighter">Welkom terug <br class="block md:hidden">{{ auth()->user()->name }}! 💪</h1>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div class="grid grid-cols-1 gap-8 flex-1">
+                            <div class="flex flex-col gap-4 flex-1">
+                                <h2 class="text-[var(--text-color)] text-2xl font-semibold tracking-tighter">Jouw training voor vandaag</h2>
+                                <div class="w-full h-full bg-white rounded-[var(--border-radius)] p-[1.5rem] flex flex-col gap-4">
+
+                                </div>
+                            </div>
                         </div>
-                        <video src="{{ asset('assets/app-hero.mp4') }}" class="absolute z-[1] inset-0 w-full h-full object-cover" autoplay muted loop playsinline></video>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <!-- Huidige Gewicht -->
-                        <div class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem] flex flex-col gap-4">
-                            <h3 class="text-[var(--text-color)] text-lg font-semibold tracking-tighter">Huidige Gewicht</h3>
-                            @if(auth()->user()->profile?->current_weight_kg)
-                                <h4 class="text-[var(--primary-color)] text-2xl font-bold tracking-tighter">
-                                    {{ auth()->user()->profile->current_weight_kg }}&nbsp;&nbsp;<span class="text-sm">kg</span>
-                                </h4>
-                                <p class="text-xs text-gray-500 -mt-3 tracking-tighter font-medium">
-                                    +0% sinds vorige week
-                                </p>
-                            @else
-                                <h4 class="text-gray-400 text-xl font-medium tracking-tighter">
-                                    Niet ingesteld
-                                </h4>
-                                <p class="text-xs text-gray-500 -mt-3 tracking-tighter font-medium">
-                                    Voeg je gewicht toe
-                                </p>
-                            @endif
-                        </div>
-                        <!-- Bench Press -->
-                        <div class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem] flex flex-col gap-4">
-                            <h3 class="text-[var(--text-color)] text-lg font-semibold tracking-tighter">Bench Press</h3>
-                            @php
-                                $benchRecord = auth()->user()->performanceRecords()
-                                    ->where('exercise_type', 'bench_press')
-                                    ->latest()
-                                    ->first();
-                            @endphp
-                            @if($benchRecord)
-                                <h4 class="text-[var(--primary-color)] text-2xl font-bold tracking-tighter">
-                                    {{ $benchRecord->weight_kg }}&nbsp;&nbsp;<span class="text-sm">kg</span>
-                                </h4>
-                                <p class="text-xs text-gray-500 -mt-3 tracking-tighter font-medium">
-                                    +0% sinds vorige week
-                                </p>
-                            @else
-                                <h4 class="text-gray-400 text-xl font-medium tracking-tighter">
-                                    Niet ingesteld
-                                </h4>
-                                <p class="text-xs text-gray-500 -mt-3 tracking-tighter font-medium">
-                                    Voeg je eerste record toe
-                                </p>
-                            @endif
-                        </div>
-                        <!-- Workout Streak (hardcoded) -->
-                        <div class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem] flex flex-col gap-4">
-                            <h3 class="text-[var(--text-color)] text-lg font-semibold tracking-tighter">Workout Streak</h3>
-                            <div class="flex items-center gap-2 justify-between">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <h2 class="grid-col-1 md:col-span-2 text-[var(--text-color)] text-2xl font-semibold tracking-tighter">Gegevens</h2>
+                            <!-- Huidige Gewicht -->
+                            <div class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem] flex flex-col gap-4">
+                                <h3 class="text-[var(--text-color)] text-lg font-semibold tracking-tighter">Huidige Gewicht</h3>
+                                @if(auth()->user()->profile?->weight_kg)
+                                    <h4 class="text-[var(--primary-color)] text-2xl font-bold tracking-tighter">
+                                        {{ auth()->user()->profile->weight_kg }}&nbsp;&nbsp;<span class="text-sm">kg</span>
+                                    </h4>
+                                    <p class="text-xs text-gray-500 -mt-3 tracking-tighter font-medium">
+                                        -0% sinds vorige week
+                                    </p>
+                                @else
+                                    <h4 class="text-gray-400 text-xl font-medium tracking-tighter">
+                                        Niet ingesteld
+                                    </h4>
+                                    <p class="text-xs text-gray-500 -mt-3 tracking-tighter font-medium">
+                                        Voeg je gewicht toe
+                                    </p>
+                                @endif
+                            </div>
+                            <!-- Cooper Test -->
+                            <div class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem] flex flex-col gap-4">
+                                <h3 class="text-[var(--text-color)] text-lg font-semibold tracking-tighter">Cooper Test (12min)</h3>
                                 @php
-                                    $streak = 1; // huidige streak
-                                    $showDays = 6; // huidige dag + 5 extra
+                                    $cooperResult = auth()->user()->testResults()
+                                        ->where('test_type', 'cooper_12min')
+                                        ->latest()
+                                        ->first();
                                 @endphp
-                                @for($i = 0; $i < $showDays; $i++)
-                                    <div class="flex flex-col items-center">
-                                        <div 
-                                            class="w-[32px] aspect-square flex items-center justify-center text-sm rounded-full border-[0.15rem]
-                                                @if($i === 0)
-                                                    bg-[var(--primary-color)] text-white border-[var(--primary-color)]
-                                                @else
-                                                    bg-white text-[var(--primary-color)]/50 border-[var(--primary-color)]/50
-                                                @endif
-                                            ">
-                                            {{ $streak + $i }}
-                                        </div>
-                                        <p class="text-xs mt-1 text-[var(--text-color)]/60 font-medium">
-                                            dag
-                                        </p>
-                                    </div>
-                                @endfor
+                                @if($cooperResult)
+                                    <h4 class="text-[var(--primary-color)] text-2xl font-bold tracking-tighter">
+                                        {{ $cooperResult->result_value }}&nbsp;&nbsp;<span class="text-sm">meter</span>
+                                    </h4>
+                                    <p class="text-xs text-gray-500 -mt-3 tracking-tighter font-medium">
+                                        Laatste test: {{ $cooperResult->test_date->format('d-m-Y') }}
+                                    </p>
+                                @else
+                                    <h4 class="text-gray-400 text-xl font-medium tracking-tighter">
+                                        Nog niet gedaan
+                                    </h4>
+                                    <p class="text-xs text-gray-500 -mt-3 tracking-tighter font-medium">
+                                        Plan je eerste Cooper test
+                                    </p>
+                                @endif
+                            </div>
+                            <!-- 5K Tijd -->
+                            <div class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem] flex flex-col gap-4">
+                                <h3 class="text-[var(--text-color)] text-lg font-semibold tracking-tighter">5K Beste Tijd</h3>
+                                @php
+                                    $fiveKResult = auth()->user()->testResults()
+                                        ->where('test_type', '5k_run')
+                                        ->latest()
+                                        ->first();
+                                @endphp
+                                @if($fiveKResult)
+                                    <h4 class="text-[var(--primary-color)] text-2xl font-bold tracking-tighter">
+                                        {{ $fiveKResult->result_value }}
+                                    </h4>
+                                    <p class="text-xs text-gray-500 -mt-3 tracking-tighter font-medium">
+                                        Getest op: {{ $fiveKResult->test_date->format('d-m-Y') }}
+                                    </p>
+                                @else
+                                    <h4 class="text-gray-400 text-xl font-medium tracking-tighter">
+                                        Nog niet getest
+                                    </h4>
+                                    <p class="text-xs text-gray-500 -mt-3 tracking-tighter font-medium">
+                                        Plan je 5K tijd test
+                                    </p>
+                                @endif
+                            </div>
+
+                            <!-- Trainingen Deze Week -->
+                            <div class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem] flex flex-col gap-4">
+                                <h3 class="text-[var(--text-color)] text-lg font-semibold tracking-tighter">Deze Week</h3>
+                                @php
+                                    // Hier zou je echte data uit je database halen
+                                    // Voor nu een voorbeeld:
+                                    $trainingsThisWeek = 3; // uit workouts table
+                                    $targetPerWeek = auth()->user()->trainingSchedules()->where('is_active', true)->first()?->trainings_per_week ?? 4;
+                                @endphp
+                                <h4 class="text-[var(--primary-color)] text-2xl font-bold tracking-tighter">
+                                    {{ $trainingsThisWeek }}/{{ $targetPerWeek }}&nbsp;&nbsp;<span class="text-sm">trainingen</span>
+                                </h4>
+                                <p class="text-xs text-gray-500 -mt-3 tracking-tighter font-medium">
+                                    @if($trainingsThisWeek >= $targetPerWeek)
+                                        Doel behaald deze week!
+                                    @else
+                                        Nog {{ $targetPerWeek - $trainingsThisWeek }} te gaan
+                                    @endif
+                                </p>
                             </div>
                         </div>
                     </div>
-                    <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="pb-[5rem]">
+                        <div class="w-full min-h-auto aspect-square md:aspect-auto md:min-h-[400px] relative overflow-hidden rounded-[var(--border-radius)]">
+                            <div class="w-full h-full absolute z-[2] px-4 md:px-0 bg-black/10 flex flex-col items-center justify-center">
+                                <h3 class="uppercase tracking-[0.4em] text-white font-semibold text-xs mb-4 text-center">Passie voor fitness en een gezonde leefstijl</h3>
+                                <h2 class="text-[28px] md:text-[40px] text-white tracking-tighter font-bold leading-tight text-center mb-8">Supplementen voor sporters<br>van de hoogste kwaliteit</h2>
+                                <a href="#" class="font-semibold text-white text-sm bg-[var(--text-color)] hover:bg-[var(--text-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)] flex items-center justify-center whitespace-nowrap w-fit">Bekijk onze producten</a>
+                            </div>
+                            <video src="{{ asset('assets/app-hero.mp4') }}" class="absolute z-[1] inset-0 w-full h-full object-cover" autoplay muted loop playsinline></video>
+                        </div>
+                    </div>
+                    <!-- <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="flex flex-col gap-8">
                             <div class="flex flex-col gap-4">
                                 <h2 class="text-[var(--text-color)] text-2xl font-semibold tracking-tighter">Voedingsschema</h2>
                                 <div class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem]">
                                     @php
-                                    // Haal user data op
                                     $profile = auth()->user()->profile;
-                                    $nutritionSettings = auth()->user()->nutritionSettings;
+                                    $nutritionEnabled = true; // HYROX heeft altijd voeding
 
-                                    if ($profile && $nutritionSettings && $nutritionSettings->enabled) {
-                                        $gewicht = $profile->current_weight_kg;
+                                    if ($profile) {
+                                        $gewicht = $profile->weight_kg;
                                         $lengte = $profile->height_cm;
-                                        $leeftijd = now()->year - $profile->birth_year;
-                                        $geslacht = $profile->sex; // 'male' of 'female'
+                                        $geboorteDatum = $profile->birth_date;
+                                        $leeftijd = now()->diffInYears($geboorteDatum);
+                                        $geslacht = $profile->gender; // 'man' of 'vrouw'
                                         
-                                        // Activiteitsfactor op basis van activity_level
-                                        $activiteitsFactor = match($profile->activity_level) {
-                                            'sedentary' => 1.2,
-                                            'light' => 1.375,
-                                            'moderate' => 1.55,
-                                            'very' => 1.725,
-                                            default => 1.375,
+                                        // Activiteitsfactor op basis van trainingsfrequentie
+                                        $trainingSchedule = auth()->user()->trainingSchedules()->where('is_active', true)->first();
+                                        $trainingsPerWeek = $trainingSchedule->trainings_per_week ?? 3;
+                                        
+                                        $activiteitsFactor = match(true) {
+                                            $trainingsPerWeek <= 2 => 1.375,
+                                            $trainingsPerWeek <= 4 => 1.55,
+                                            $trainingsPerWeek >= 5 => 1.725,
+                                            default => 1.55,
                                         };
 
-                                        // BMR berekening (Mifflin-St Jeor)
-                                        if ($geslacht === 'male') {
+                                        // BMR berekening
+                                        if ($geslacht === 'man') {
                                             $bmr = 10 * $gewicht + 6.25 * $lengte - 5 * $leeftijd + 5;
                                         } else {
                                             $bmr = 10 * $gewicht + 6.25 * $lengte - 5 * $leeftijd - 161;
                                         }
 
-                                        // Totale caloriebehoefte (TDEE)
-                                        $baseTdee = round($bmr * $activiteitsFactor);
+                                        $tdee = round($bmr * $activiteitsFactor);
                                         
-                                        // Pas calorie-aanpassing toe indien ingesteld
-                                        $calorieAdjustment = 0;
-                                        if ($nutritionSettings->calorie_adjustment_pct) {
-                                            $percentage = (int) str_replace(['%', '+'], '', $nutritionSettings->calorie_adjustment_pct);
-                                            $calorieAdjustment = $percentage / 100;
-                                        }
-                                        
-                                        $tdee = round($baseTdee * (1 + $calorieAdjustment));
-
-                                        // Macronutriënten
-                                        $eiwit = round($gewicht * 2); // 2g per kg lichaamsgewicht
+                                        // HYROX macros (meer eiwitten voor endurance/strength)
+                                        $eiwit = round($gewicht * 2.2); // Iets meer voor HYROX
                                         $eiwitKcal = $eiwit * 4;
 
-                                        $vetKcal = round($tdee * 0.25); // 25% van totale calorieën
-                                        $vet = round($vetKcal / 9); // 9 kcal per gram vet
+                                        $vetKcal = round($tdee * 0.25);
+                                        $vet = round($vetKcal / 9);
 
                                         $koolhydratenKcal = $tdee - ($eiwitKcal + $vetKcal);
-                                        $koolhydraten = round($koolhydratenKcal / 4); // 4 kcal per gram koolhydraten
+                                        $koolhydraten = round($koolhydratenKcal / 4);
                                     } else {
-                                        // Fallback waarden als nutrition niet enabled is
-                                        $tdee = null;
-                                        $eiwit = null;
-                                        $vet = null;
-                                        $koolhydraten = null;
+                                        $tdee = $eiwit = $vet = $koolhydraten = null;
                                     }
                                     @endphp
-                                    <!-- Voorbeeld gebruik -->
                                     <div class="grid grid-cols-1">
                                         <p class=" flex items-center justify-between">
                                             <span class="text-sm font-semibold tracking-tighter leading-tight text-[var(--text-color)]">
@@ -326,7 +337,7 @@
                         </div>
                         <div class="flex flex-col gap-8">
                             <div class="flex flex-col gap-4">
-                                <h2 class="text-[var(--text-color)] text-2xl font-semibold tracking-tighter">AI Coach</h2>
+                                <h2 class="text-[var(--text-color)] text-2xl font-semibold tracking-tighter">Stel een vraag</h2>
                                 <div id="chatbot" class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem] flex flex-col gap-4">
                                     <div id="chat-messages" class="bg-[#f0f0f0] min-h-[350px] md:min-h-[200px] max-h-[350px] md:max-h-[200px] p-[1.5rem] rounded-[var(--border-radius)] flex flex-col gap-4 overflow-y-auto"></div>
                                     <div class="flex gap-2">
@@ -336,65 +347,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="flex flex-col gap-4">
-                        <h2 class="text-[var(--text-color)] text-2xl font-semibold tracking-tighter">Training</h2>
-                        <div class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem] flex flex-col gap-4">
-                            <div class="flex flex-col gap-4">
-                                <div class="flex flex-col md:flex-row md:items-center justify-between">
-                                    <h3 class="text-[var(--primary-color)] text-lg font-semibold tracking-tighter mb-2 md:mb-0">Vandaag</h3>
-                                    <a href="#" class="w-fit md:w-auto text-white font-semibold text-sm bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/80 transition duration-300 cursor-pointer py-2.5 px-4 rounded-[var(--border-radius)]">Training markeren als voltooid</a>
-                                </div>
-                                <div class="bg-[#f0f0f0] overflow-x-auto p-[1.5rem] rounded-[var(--border-radius)] mb-4">
-                                    <div class="min-w-[800px] flex flex-col gap-4"> <!-- forceer breedte voor scroll -->
-                                        <div class="grid grid-cols-5 gap-x-8">
-                                            <p class="text-sm font-semibold tracking-tighter leading-tight text-[var(--text-color)]/75">Oefening</p>
-                                            <p class="text-sm font-semibold tracking-tighter leading-tight text-[var(--text-color)]/75">Sets</p>
-                                            <p class="text-sm font-semibold tracking-tighter leading-tight text-[var(--text-color)]/75">Reps</p>
-                                            <p class="text-sm font-semibold tracking-tighter leading-tight text-[var(--text-color)]/75">Gewicht</p>
-                                            <p class="text-sm font-semibold tracking-tighter leading-tight text-[var(--text-color)]/75">Rust</p>
-                                        </div>
-                                        <div class="grid grid-cols-5 gap-x-8">
-                                            <p class="text-sm tracking-tighter leading-tight text-[var(--text-color)]">Bench Press</p>
-                                            <p class="text-sm tracking-tighter leading-tight text-[var(--text-color)]">4</p>
-                                            <p class="text-sm tracking-tighter leading-tight text-[var(--text-color)]">8-10</p>
-                                            <p class="text-sm tracking-tighter leading-tight text-[var(--text-color)]">80kg</p>
-                                            <p class="text-sm tracking-tighter leading-tight text-[var(--text-color)]">2min</p>
-                                        </div>
-                                        <div class="grid grid-cols-5 gap-x-8">
-                                            <p class="text-sm tracking-tighter leading-tight text-[var(--text-color)]">Pull-ups</p>
-                                            <p class="text-sm tracking-tighter leading-tight text-[var(--text-color)]">3</p>
-                                            <p class="text-sm tracking-tighter leading-tight text-[var(--text-color)]">8-12</p>
-                                            <p class="text-sm tracking-tighter leading-tight text-[var(--text-color)]">Lichaamsgewicht</p>
-                                            <p class="text-sm tracking-tighter leading-tight text-[var(--text-color)]">2min</p>
-                                        </div>
-                                        <div class="grid grid-cols-5 gap-x-8">
-                                            <p class="text-sm tracking-tighter leading-tight text-[var(--text-color)]">Overhead Press</p>
-                                            <p class="text-sm tracking-tighter leading-tight text-[var(--text-color)]">3</p>
-                                            <p class="text-sm tracking-tighter leading-tight text-[var(--text-color)]">10-12</p>
-                                            <p class="text-sm tracking-tighter leading-tight text-[var(--text-color)]">50kg</p>
-                                            <p class="text-sm tracking-tighter leading-tight text-[var(--text-color)]">2min</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col gap-2">
-                                    <h3 class="text-[var(--text-color)] text-lg font-semibold tracking-tighter">Notities</h3>
-                                    <p class="text-sm font-normal tracking-tighter md:max-w-[75%] text-[var(--text-color)]">Laten we ervoor zorgen dat deze training je sterker en fitter maakt! 💪</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-4">
-                        <h2 class="text-[var(--text-color)] text-2xl font-semibold tracking-tighter">Training</h2>
-                        <div class="w-full bg-white rounded-[var(--border-radius)] p-[1.5rem] flex flex-col gap-4">
-                            <div class="flex flex-col gap-4">
-                                <div class="flex flex-col items-center gap-4">
-                                    <i class="fa-solid fa-badge-check text-[var(--primary-color)] text-[48px]"></i>
-                                    <h3 class="text-[var(--text-color)] text-lg font-semibold tracking-tighter leading-tight text-center">Lekker bezig!<br>Morgen weer een nieuwe dag.</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -404,7 +357,6 @@
                     showModal: true,
                     loading: false,
                     form: {
-                        name: '',
                         email: '',
                         password: '',
                         password_confirmation: ''
@@ -432,9 +384,6 @@
                             
                             if (data.success) {
                                 this.showModal = false;
-                                // Optioneel: toon success message
-                                alert('Account succesvol ingesteld!');
-                                // Reload page om temp account flag te verwijderen
                                 window.location.reload();
                             } else {
                                 alert(data.message || 'Er ging iets mis');
@@ -444,14 +393,6 @@
                         }
                         
                         this.loading = false;
-                    },
-                    
-                    skipSetup() {
-                        // Gebruiker kan popup sluiten, maar krijgt het later weer te zien
-                        this.showModal = false;
-                        
-                        // Optioneel: stel een cookie/localStorage in om niet te vaak te vragen
-                        localStorage.setItem('account_setup_skipped', Date.now());
                     }
                 }
             }

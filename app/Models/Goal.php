@@ -6,23 +6,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class TrainingSchedule extends Model
+class Goal extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'user_id',
-        'trainings_per_week',
-        'session_duration',
-        'multiple_per_day',
-        'multiple_when',
+        'goal_type',
+        'training_goal',
+        'training_period',
+        'start_date',
         'is_active',
     ];
 
     protected function casts(): array
     {
         return [
-            'multiple_per_day' => 'boolean',
+            'start_date' => 'date',
             'is_active' => 'boolean',
         ];
     }

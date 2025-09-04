@@ -22,68 +22,81 @@ class OnboardingController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            // Onboarding data validatie (zonder email/name)
-            'goal_type' => ['required', Rule::in(['cut', 'bulk', 'fit'])],
-            'target_weight_kg' => ['nullable', 'numeric', 'min:30', 'max:300'],
-            'fit_goal_text' => ['nullable', 'string', 'max:500'],
-            'target_date' => ['nullable', 'date', 'after:today'],
+            // Personal information
+            'name' => ['required', 'string', 'max:255'],
+            'birth_date' => ['required', 'date', 'before:' . now()->subYears(13)->toDateString()],
+            'address' => ['required', 'string', 'max:500'],
+            'gender' => ['required', Rule::in(['man', 'vrouw'])],
+            'height_cm' => ['required', 'integer', 'min:140', 'max:220'],
+            'weight_kg' => ['required', 'numeric', 'min:40', 'max:200'],
             
-            'current_weight_kg' => ['required', 'numeric', 'min:30', 'max:300'],
-            'height_cm' => ['required', 'integer', 'min:120', 'max:230'],
-            'birth_year' => ['required', 'integer', 'min:1930', 'max:' . (now()->year - 13)],
-            'sex' => ['required', Rule::in(['male', 'female'])],
-            'activity_level' => ['required', Rule::in(['sedentary', 'light', 'moderate', 'very'])],
-            'experience_level' => ['required', Rule::in(['beginner', 'intermediate', 'advanced'])],
+            // Injuries and goals  
+            'injuries' => ['nullable', 'string', 'max:1000'],
+            'training_goal' => ['required', 'string', 'max:1000'],
+            'training_period' => ['required', 'string', 'max:255'],
+            'start_date' => ['required', 'date'],
             
-            'train_location' => ['required', Rule::in(['home', 'gym'])],
-            'equipment' => ['nullable', 'array'],
-            'equipment.*' => [Rule::in(['mat', 'dumbbells', 'bands', 'none'])],
+            // Training frequency
+            'trainings_per_week' => ['required', 'integer', 'min:2', 'max:6'],
+            'multiple_per_day' => ['required', Rule::in(['ja', 'nee'])],
+            'multiple_when' => ['nullable', 'string', 'max:255'],
+            'session_duration' => ['required', 'integer', Rule::in([45, 60, 75, 90])],
             
-            'days_per_week' => ['required', 'integer', 'min:2', 'max:7'],
-            'session_minutes' => ['required', 'integer', Rule::in([30, 60, 90, 120])],
-            'weekdays' => ['nullable', 'array'],
-            'weekdays.*' => [Rule::in(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'])],
+            // Training background
+            'training_background' => ['required', 'string', 'max:1000'],
+            'current_frequency' => ['required', 'string', 'max:500'],
+            'current_activities' => ['required', 'string', 'max:1000'],
             
-            'bench_mode' => ['nullable', Rule::in(['1rm', '5reps', '10reps', 'unknown'])],
-            'bench_weight_kg' => ['nullable', 'numeric', 'min:20', 'max:300'],
+            // Facilities and equipment
+            'training_location' => ['required', Rule::in(['thuis', 'sportschool', 'buiten', 'combinatie'])],
+            'equipment' => ['nullable', 'string', 'max:1000'],
+            'hyrox_equipment' => ['nullable', 'string', 'max:1000'],
             
-            'injuries' => ['nullable', 'array'],
-            'injuries.*' => [Rule::in(['knee', 'back', 'shoulder', 'none', 'other'])],
+            // Additional notes
+            'additional_notes' => ['nullable', 'string', 'max:1000'],
             
-            'nutrition_enabled' => ['required', Rule::in(['yes', 'no'])],
-            'nutrition_rate_pct' => ['nullable', Rule::in(['-20', '-15', '-10', '+5', '+10'])],
-            'diet_pref' => ['nullable', Rule::in(['none', 'vegetarian', 'halal', 'allergy', 'other'])],
-            'diet_pref_text' => ['nullable', 'string', 'max:255'],
+            // Heart rate data (all optional)
+            'max_hr' => ['nullable', 'integer', 'min:150', 'max:220'],
+            'rest_hr' => ['nullable', 'integer', 'min:40', 'max:100'],
+            'zone1' => ['nullable', 'integer', 'min:100', 'max:200'],
+            'zone2' => ['nullable', 'integer', 'min:100', 'max:200'],
+            'zone3' => ['nullable', 'integer', 'min:100', 'max:200'],
+            'zone4' => ['nullable', 'integer', 'min:100', 'max:200'],
+            'zone5' => ['nullable', 'integer', 'min:100', 'max:220'],
             
-            'notify_channel' => ['required', Rule::in(['push', 'email', 'whatsapp', 'none'])],
+            // Tests
+            'cooper_done' => ['required', Rule::in(['ja', 'nee'])],
+            'cooper_result' => ['nullable', 'integer', 'min:1', 'max:10000'],
+            'fivek_done' => ['required', Rule::in(['ja', 'nee'])],
+            'fivek_result' => ['nullable', 'string', 'max:10'], // Format: "25:30"
         ]);
 
         try {
             DB::transaction(function () use ($validated) {
-                // 1. Create anonymous user account
+                // Create user account with real name
                 $user = User::create([
-                    'name' => 'Guest User',
-                    'email' => 'guest_' . Str::random(10) . '@temp.local',
+                    'name' => $validated['name'],
+                    'email' => 'hyrox_' . Str::random(10) . '@temp.local',
                     'password' => Hash::make(Str::random(16)),
-                    'is_temp_account' => true, // Flag for temp account
+                    'is_temp_account' => true,
                     'email_verified_at' => null,
                 ]);
 
-                // 2. Log user in
+                // Log user in
                 Auth::login($user);
 
-                // 3. Process onboarding data
-                $this->processOnboardingData($validated, $user);
+                // Process HYROX intake data
+                $this->processHyroxIntakeData($validated, $user);
             });
 
             return response()->json([
                 'success' => true,
-                'message' => 'Onboarding voltooid!',
+                'message' => 'HYROX intake voltooid!',
                 'redirect' => route('app')
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Guest onboarding failed', [
+            Log::error('HYROX intake failed', [
                 'error' => $e->getMessage(),
                 'data' => $validated
             ]);
@@ -95,68 +108,78 @@ class OnboardingController extends Controller
         }
     }
 
-    private function processOnboardingData(array $data, User $user)
+    private function processHyroxIntakeData(array $data, User $user)
     {
-        // 1. Update user profile
+        // 1. Update user profile with HYROX specific data
         $user->profile()->create([
-            'current_weight_kg' => $data['current_weight_kg'],
+            'birth_date' => $data['birth_date'],
+            'address' => $data['address'],
+            'gender' => $data['gender'],
             'height_cm' => $data['height_cm'],
-            'birth_year' => $data['birth_year'],
-            'sex' => $data['sex'],
-            'activity_level' => $data['activity_level'],
-            'experience_level' => $data['experience_level'],
-            'train_location' => $data['train_location'],
-            'equipment' => $data['equipment'] ?? [],
+            'weight_kg' => $data['weight_kg'],
+            'injuries' => $data['injuries'],
+            'training_location' => $data['training_location'],
+            'equipment' => $data['equipment'],
+            'hyrox_equipment' => $data['hyrox_equipment'],
+            'additional_notes' => $data['additional_notes'],
         ]);
 
-        // 2. Create fitness goal
+        // 2. Create HYROX training goal
         $user->goals()->create([
-            'goal_type' => $data['goal_type'],
-            'target_weight_kg' => $data['goal_type'] !== 'fit' ? $data['target_weight_kg'] : null,
-            'fit_goal_text' => $data['goal_type'] === 'fit' ? $data['fit_goal_text'] : null,
-            'target_date' => $data['target_date'] ?? null,
+            'goal_type' => 'hyrox',
+            'training_goal' => $data['training_goal'],
+            'training_period' => $data['training_period'],
+            'start_date' => $data['start_date'],
             'is_active' => true,
         ]);
 
         // 3. Create training schedule
         $user->trainingSchedules()->create([
-            'days_per_week' => $data['days_per_week'],
-            'session_minutes' => $data['session_minutes'],
-            'weekdays' => $data['weekdays'] ?? [],
+            'trainings_per_week' => $data['trainings_per_week'],
+            'session_duration' => $data['session_duration'],
+            'multiple_per_day' => $data['multiple_per_day'] === 'ja',
+            'multiple_when' => $data['multiple_when'],
             'is_active' => true,
         ]);
 
-        // 4. Create bench press record if provided
-        if (!empty($data['bench_mode']) && $data['bench_mode'] !== 'unknown' && !empty($data['bench_weight_kg'])) {
-            $reps = match($data['bench_mode']) {
-                '1rm' => 1,
-                '5reps' => 5,
-                '10reps' => 10,
-                default => null,
-            };
+        // 4. Store training background
+        $user->trainingBackground()->create([
+            'background' => $data['training_background'],
+            'current_frequency' => $data['current_frequency'],
+            'current_activities' => $data['current_activities'],
+        ]);
 
-            if ($reps) {
-                $user->performanceRecords()->create([
-                    'exercise_type' => 'bench_press',
-                    'weight_kg' => $data['bench_weight_kg'],
-                    'reps' => $reps,
-                    'mode' => $data['bench_mode'],
-                ]);
-            }
+        // 5. Store heart rate data if provided
+        if ($data['max_hr'] || $data['rest_hr'] || $data['zone1']) {
+            $user->heartRateData()->create([
+                'max_hr' => $data['max_hr'],
+                'rest_hr' => $data['rest_hr'],
+                'zone1' => $data['zone1'],
+                'zone2' => $data['zone2'],
+                'zone3' => $data['zone3'],
+                'zone4' => $data['zone4'],
+                'zone5' => $data['zone5'],
+            ]);
         }
 
-        // 5. Create nutrition settings
-        $user->nutritionSettings()->create([
-            'enabled' => ($data['nutrition_enabled'] ?? 'no') === 'yes',
-            'calorie_adjustment_pct' => $data['nutrition_rate_pct'] ?? null,
-            'diet_preference' => $data['diet_pref'] ?? 'none',
-            'diet_preference_text' => $data['diet_pref_text'] ?? null,
-            'injuries' => $data['injuries'] ?? [],
-        ]);
+        // 6. Store Cooper test result
+        if ($data['cooper_done'] === 'ja' && $data['cooper_result']) {
+            $user->testResults()->create([
+                'test_type' => 'cooper_12min',
+                'result_value' => $data['cooper_result'],
+                'result_unit' => 'meters',
+                'test_date' => now(),
+            ]);
+        }
 
-        // 6. Create notification settings
-        $user->notificationSettings()->create([
-            'channel' => $data['notify_channel'] ?? 'none'
-        ]);
+        // 7. Store 5K test result  
+        if ($data['fivek_done'] === 'ja' && $data['fivek_result']) {
+            $user->testResults()->create([
+                'test_type' => '5k_run',
+                'result_value' => $data['fivek_result'],
+                'result_unit' => 'time',
+                'test_date' => now(),
+            ]);
+        }
     }
 }

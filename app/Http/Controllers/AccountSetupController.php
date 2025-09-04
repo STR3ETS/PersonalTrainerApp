@@ -11,25 +11,20 @@ class AccountSetupController extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:users,email,' . Auth::id()],
-            'password' => ['required', 'confirmed', 'min:8'],
+        $validated = $request->validate([
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user = Auth::user();
+        $user = auth()->user();
         
-        // Check if this is actually a temp account
         if (!$user->is_temp_account) {
-            throw ValidationException::withMessages([
-                'error' => 'Account is al ingesteld.'
-            ]);
+            return response()->json(['success' => false, 'message' => 'Account is al ingesteld.']);
         }
 
         $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
             'is_temp_account' => false,
             'email_verified_at' => now(),
         ]);

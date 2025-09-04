@@ -11,8 +11,8 @@ use App\Http\Controllers\AccountSetupController;
 Route::get('/', function () { return view('welcome'); });
 
 // Onboarding Routes
-Route::get('/onboarding/fitness', [OnboardingController::class, 'show'])->name('onboarding.fitness');
-Route::post('/onboarding/fitness', [OnboardingController::class, 'store'])->name('onboarding.fitness.store');
+Route::get('/onboarding/hyrox-intake', [OnboardingController::class, 'show'])->name('onboarding.hyrox');
+Route::post('/onboarding/hyrox-intake', [OnboardingController::class, 'store'])->name('onboarding.hyrox.store');
 
 // Auth Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');

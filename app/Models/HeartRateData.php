@@ -6,26 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class TrainingSchedule extends Model
+class HeartRateData extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'user_id',
-        'trainings_per_week',
-        'session_duration',
-        'multiple_per_day',
-        'multiple_when',
-        'is_active',
+        'max_hr',
+        'rest_hr',
+        'zone1',
+        'zone2',
+        'zone3',
+        'zone4',
+        'zone5',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'multiple_per_day' => 'boolean',
-            'is_active' => 'boolean',
-        ];
-    }
 
     public function user(): BelongsTo
     {
